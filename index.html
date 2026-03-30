@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>VishavX ULTIMATE</title>
+<title>VishavX FINAL</title>
 
 <style>
 body{
@@ -40,7 +40,7 @@ top:10px;
 color:lime;
 }
 
-/* MENU BUTTON */
+/* SIDE MENU BUTTON */
 #menuBtn{
 position:fixed;
 right:0;
@@ -51,6 +51,7 @@ background:black;
 color:lime;
 border-left:2px solid lime;
 cursor:pointer;
+z-index:1000;
 }
 
 /* MAIN */
@@ -69,6 +70,7 @@ background:black;
 border-left:2px solid lime;
 transition:0.4s;
 padding-top:50px;
+z-index:999;
 }
 
 #more.active{
@@ -119,7 +121,8 @@ animation:glitch .5s infinite;
 <div id="panel"></div>
 <div id="username"></div>
 
-<div id="menuBtn" onclick="openMenu()">☰</div>
+<!-- ALWAYS VISIBLE -->
+<div id="menuBtn" onclick="openMenu()">☰ MORE</div>
 
 <div id="intro"></div>
 
@@ -133,7 +136,7 @@ animation:glitch .5s infinite;
 </div>
 
 <div id="more">
-<h2>MORE</h2>
+<h2>MORE MENU</h2>
 
 <input id="chatInput">
 <button onclick="askAI()">Send</button>
@@ -219,7 +222,7 @@ msg.innerHTML="Synchronizing...";
 
 setTimeout(()=>{
 
-if(key.value==="siya0"){
+if(document.getElementById("key").value==="siya0"){
 openMenu();
 return;
 }
