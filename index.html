@@ -4,11 +4,57 @@
 <title>VishavX FINAL</title>
 
 <style>
-body{margin:0;background:black;color:#0f0;font-family:monospace;text-align:center;overflow:hidden;}
-canvas{position:fixed;top:0;left:0;z-index:-1;}
-#panel{position:fixed;left:0;top:0;font-size:12px;color:red;padding:10px;text-align:left;}
-#username{position:fixed;right:10px;top:10px;color:lime;}
-button,input{padding:10px;margin:5px;background:black;color:lime;border:1px solid lime;}
+body{
+margin:0;
+background:black;
+color:#0f0;
+font-family:monospace;
+text-align:center;
+overflow:hidden;
+}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
+
+#panel{
+position:fixed;
+left:0;
+top:0;
+font-size:12px;
+color:red;
+padding:10px;
+text-align:left;
+}
+
+#username{
+position:fixed;
+right:10px;
+top:10px;
+color:lime;
+}
+
+#menuBtn{
+position:fixed;
+right:10px;
+top:50%;
+background:black;
+color:lime;
+border:1px solid lime;
+padding:10px;
+cursor:pointer;
+}
+
+button,input{
+padding:10px;
+margin:5px;
+background:black;
+color:lime;
+border:1px solid lime;
+}
 </style>
 
 </head>
@@ -18,6 +64,8 @@ button,input{padding:10px;margin:5px;background:black;color:lime;border:1px soli
 
 <div id="panel"></div>
 <div id="username"></div>
+
+<div id="menuBtn" onclick="openMenu()">☰ MORE</div>
 
 <div id="intro"></div>
 
@@ -45,7 +93,6 @@ button,input{padding:10px;margin:5px;background:black;color:lime;border:1px soli
 
 <script>
 
-// ===== WAIT FOR DOM =====
 window.onload = function(){
 
 // ===== USER =====
@@ -56,23 +103,8 @@ localStorage.setItem("name",name);
 }
 document.getElementById("username").innerHTML="user_"+name;
 
-// ===== ELEMENTS =====
-let key = document.getElementById("key");
-let main = document.getElementById("main");
-let more = document.getElementById("more");
-
-// ===== TEXT TRIGGER FIXED =====
-key.addEventListener("input", function(){
-let val = this.value.toLowerCase();
-
-if(val.includes("vishav")){
-main.style.display="none";
-more.style.display="block";
-}
-});
-
 // ===== INTRO =====
-let intro = document.getElementById("intro");
+let intro=document.getElementById("intro");
 let txt=["Initializing system...","Loading modules...","Access granted..."];
 let i=0,j=0;
 
@@ -82,27 +114,40 @@ if(j<txt[i].length){
 intro.innerHTML+=txt[i][j];
 j++;setTimeout(introAnim,40);
 }else{
-intro.innerHTML+="<br>";i++;j=0;setTimeout(introAnim,300);
-}}}
+intro.innerHTML+="<br>";
+i++;j=0;
+setTimeout(introAnim,300);
+}
+}
+}
 introAnim();
 
 setTimeout(()=>{
 intro.style.display="none";
-main.style.display="block";
+document.getElementById("main").style.display="block";
 loadInfo();
 },3000);
 
 // ===== MATRIX =====
 let c=document.getElementById("matrix");
 let ctx=c.getContext("2d");
-c.height=innerHeight;c.width=innerWidth;
-let letters="01".split(""),drops=[];
-for(let x=0;x<c.width/14;x++)drops[x]=1;
+
+c.height=window.innerHeight;
+c.width=window.innerWidth;
+
+let letters="01".split("");
+let drops=[];
+
+for(let x=0;x<c.width/14;x++){
+drops[x]=1;
+}
 
 setInterval(()=>{
 ctx.fillStyle="rgba(0,0,0,.05)";
 ctx.fillRect(0,0,c.width,c.height);
+
 ctx.fillStyle="#0F0";
+
 drops.forEach((y,i)=>{
 ctx.fillText(letters[Math.random()*2|0],i*14,y);
 drops[i]=y>c.height||Math.random()>0.975?0:y+14;
@@ -135,13 +180,11 @@ msg.innerHTML="Synchronizing...";
 
 setTimeout(()=>{
 
-if(key.value==="siya0"){
-main.style.display="none";
-more.style.display="block";
+if(document.getElementById("key").value==="siya0"){
+openMenu();
 return;
 }
 
-// WRONG
 attempts--;
 msg.innerHTML="Wrong ("+attempts+")";
 
@@ -150,9 +193,10 @@ startBlock();
 }
 
 },1500);
+
 };
 
-// ===== PRO GLITCH =====
+// ===== GLITCH BLOCK =====
 function startBlock(){
 
 let msg=document.getElementById("msg");
@@ -172,27 +216,24 @@ msg.innerHTML="Retry";
 }
 },1000);
 
-// GLITCH
 let steps=0;
 
 let glitch=setInterval(()=>{
 
 document.body.style.transform =
 `translate(${Math.random()*20-10}px, ${Math.random()*20-10}px)
- scale(${1+Math.random()*0.2})
- rotate(${Math.random()*10-5}deg)`;
+scale(${1+Math.random()*0.2})
+rotate(${Math.random()*10-5}deg)`;
 
 let colors=["black","pink","white"];
 document.body.style.background=colors[Math.floor(Math.random()*colors.length)];
 
 let chars="█▓▒░<>/\\{}[]#@$%&*!?";
-let t="";
+let text="";
 for(let i=0;i<30;i++){
-t+=chars[Math.floor(Math.random()*chars.length)];
+text+=chars[Math.floor(Math.random()*chars.length)];
 }
-msg.innerHTML=t;
-
-navigator.vibrate?.(100);
+msg.innerHTML=text;
 
 steps++;
 
@@ -208,6 +249,7 @@ cameraPhase();
 }
 
 },80);
+
 }
 
 // ===== FAKE CAMERA =====
@@ -223,20 +265,32 @@ Face detected 👁️
 
 setTimeout(()=>{
 let s=new SpeechSynthesisUtterance("I can see you");
-s.rate=0.8;
 speechSynthesis.speak(s);
 },1000);
 
 }
 
+// ===== MENU CONTROL =====
+window.openMenu=function(){
+document.getElementById("main").style.display="none";
+document.getElementById("more").style.display="block";
+};
+
+window.back=function(){
+document.getElementById("main").style.display="block";
+document.getElementById("more").style.display="none";
+};
+
 // ===== DOWNLOAD =====
 window.startDownload=function(){
+
 let box=document.getElementById("moreMsg");
 let num=Math.floor(Math.random()*999999);
 let p=0;
 
 let int=setInterval(()=>{
 p+=Math.floor(Math.random()*10);
+
 box.innerHTML=`Downloading user${num}_data.zip<br>${p}%`;
 
 if(p>=100){
@@ -244,21 +298,18 @@ clearInterval(int);
 box.innerHTML="Completed";
 }
 },500);
+
 };
 
 // ===== AI =====
 window.askAI=function(){
+
 let chat=document.getElementById("chat");
 let input=document.getElementById("chatInput");
 
 chat.innerHTML+="<br>You: "+input.value;
 chat.innerHTML+="<br>AI: Ready";
-};
 
-// ===== NAV =====
-window.back=function(){
-main.style.display="block";
-more.style.display="none";
 };
 
 };
