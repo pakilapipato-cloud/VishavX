@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>VishavX FINAL</title>
+<title>VishavX ULTIMATE</title>
 
 <style>
 body{
 margin:0;
 background:black;
 color:#0f0;
-font-family:monospace;
+font-family:Courier New;
 text-align:center;
 overflow:hidden;
 }
@@ -20,16 +20,19 @@ left:0;
 z-index:-1;
 }
 
+/* PANEL */
 #panel{
 position:fixed;
-left:0;
-top:0;
-font-size:12px;
+left:10px;
+top:10px;
 color:red;
+background:rgba(0,0,0,0.5);
 padding:10px;
-text-align:left;
+border:1px solid red;
+border-radius:10px;
 }
 
+/* USER */
 #username{
 position:fixed;
 right:10px;
@@ -37,23 +40,74 @@ top:10px;
 color:lime;
 }
 
+/* MENU BUTTON */
 #menuBtn{
 position:fixed;
-right:10px;
+right:0;
 top:50%;
+transform:translateY(-50%);
+padding:12px;
 background:black;
 color:lime;
-border:1px solid lime;
-padding:10px;
+border-left:2px solid lime;
 cursor:pointer;
 }
 
-button,input{
+/* MAIN */
+#main{
+margin-top:120px;
+}
+
+/* SLIDE MENU */
+#more{
+position:fixed;
+right:-100%;
+top:0;
+width:80%;
+height:100%;
+background:black;
+border-left:2px solid lime;
+transition:0.4s;
+padding-top:50px;
+}
+
+#more.active{
+right:0;
+}
+
+/* INPUT */
+input{
 padding:10px;
-margin:5px;
+margin:8px;
 background:black;
 color:lime;
 border:1px solid lime;
+}
+
+/* BUTTON */
+button{
+padding:10px;
+margin:8px;
+background:black;
+color:lime;
+border:1px solid lime;
+cursor:pointer;
+}
+
+button:hover{
+background:lime;
+color:black;
+}
+
+/* GLITCH */
+h2{
+animation:glitch .5s infinite;
+}
+
+@keyframes glitch{
+0%{text-shadow:2px 2px red;}
+50%{text-shadow:-2px -2px lime;}
+100%{text-shadow:2px -2px blue;}
 }
 </style>
 
@@ -65,7 +119,7 @@ border:1px solid lime;
 <div id="panel"></div>
 <div id="username"></div>
 
-<div id="menuBtn" onclick="openMenu()">☰ MORE</div>
+<div id="menuBtn" onclick="openMenu()">☰</div>
 
 <div id="intro"></div>
 
@@ -78,8 +132,8 @@ border:1px solid lime;
 <div id="msg"></div>
 </div>
 
-<div id="more" style="display:none;">
-<h2>MORE MENU</h2>
+<div id="more">
+<h2>MORE</h2>
 
 <input id="chatInput">
 <button onclick="askAI()">Send</button>
@@ -93,80 +147,65 @@ border:1px solid lime;
 
 <script>
 
-window.onload = function(){
+window.onload=function(){
 
-// ===== USER =====
-let name = localStorage.getItem("name");
+// USER
+let name=localStorage.getItem("name");
 if(!name){
-name = prompt("Enter your name");
+name=prompt("Enter your name");
 localStorage.setItem("name",name);
 }
-document.getElementById("username").innerHTML="user_"+name;
+username.innerHTML="user_"+name;
 
-// ===== INTRO =====
+// INTRO
 let intro=document.getElementById("intro");
-let txt=["Initializing system...","Loading modules...","Access granted..."];
+let txt=["Initializing...","Loading modules...","Access granted"];
 let i=0,j=0;
 
-function introAnim(){
+function anim(){
 if(i<txt.length){
 if(j<txt[i].length){
 intro.innerHTML+=txt[i][j];
-j++;setTimeout(introAnim,40);
+j++;setTimeout(anim,40);
 }else{
-intro.innerHTML+="<br>";
-i++;j=0;
-setTimeout(introAnim,300);
+intro.innerHTML+="<br>";i++;j=0;setTimeout(anim,300);
+}}
 }
-}
-}
-introAnim();
+anim();
 
 setTimeout(()=>{
 intro.style.display="none";
-document.getElementById("main").style.display="block";
+main.style.display="block";
 loadInfo();
 },3000);
 
-// ===== MATRIX =====
-let c=document.getElementById("matrix");
-let ctx=c.getContext("2d");
-
-c.height=window.innerHeight;
-c.width=window.innerWidth;
-
-let letters="01".split("");
-let drops=[];
-
-for(let x=0;x<c.width/14;x++){
-drops[x]=1;
-}
+// MATRIX
+let c=matrix,ctx=c.getContext("2d");
+c.height=innerHeight;c.width=innerWidth;
+let letters="01".split(""),drops=[];
+for(let x=0;x<c.width/14;x++)drops[x]=1;
 
 setInterval(()=>{
 ctx.fillStyle="rgba(0,0,0,.05)";
 ctx.fillRect(0,0,c.width,c.height);
-
 ctx.fillStyle="#0F0";
-
 drops.forEach((y,i)=>{
 ctx.fillText(letters[Math.random()*2|0],i*14,y);
 drops[i]=y>c.height||Math.random()>0.975?0:y+14;
 });
 },33);
 
-// ===== DEVICE INFO =====
+// INFO
 function loadInfo(){
-let device = navigator.userAgent.includes("Android") ? "Android" : "iOS";
-
-document.getElementById("panel").innerHTML=`
-ACCESSING SYSTEM...<br>
+let device=navigator.userAgent.includes("Android")?"Android":"iOS";
+panel.innerHTML=`
 Device: ${device}<br>
-Internet: High Speed Internet<br>
+Internet: High Speed<br>
 Time: ${new Date().toLocaleTimeString()}
 `;
 }
 
-// ===== SECURITY =====
+// SECURITY
 let attempts=5;
 let blocked=false;
 
@@ -180,7 +219,7 @@ msg.innerHTML="Synchronizing...";
 
 setTimeout(()=>{
 
-if(document.getElementById("key").value==="siya0"){
+if(key.value==="siya0"){
 openMenu();
 return;
 }
@@ -189,15 +228,14 @@ attempts--;
 msg.innerHTML="Wrong ("+attempts+")";
 
 if(attempts<=0){
-startBlock();
+blockSystem();
 }
 
 },1500);
-
 };
 
-// ===== GLITCH BLOCK =====
-function startBlock(){
+// BLOCK + GLITCH
+function blockSystem(){
 
 let msg=document.getElementById("msg");
 
@@ -205,7 +243,7 @@ blocked=true;
 let time=30;
 
 let timer=setInterval(()=>{
-msg.innerHTML=`🔒 BLOCKED ${time}s`;
+msg.innerHTML=`BLOCKED ${time}s`;
 time--;
 
 if(time<=0){
@@ -220,20 +258,20 @@ let steps=0;
 
 let glitch=setInterval(()=>{
 
-document.body.style.transform =
-`translate(${Math.random()*20-10}px, ${Math.random()*20-10}px)
+document.body.style.transform=
+`translate(${Math.random()*20-10}px,${Math.random()*20-10}px)
 scale(${1+Math.random()*0.2})
 rotate(${Math.random()*10-5}deg)`;
 
-let colors=["black","pink","white"];
-document.body.style.background=colors[Math.floor(Math.random()*colors.length)];
+document.body.style.background=
+["black","pink","white"][Math.floor(Math.random()*3)];
 
 let chars="█▓▒░<>/\\{}[]#@$%&*!?";
-let text="";
+let t="";
 for(let i=0;i<30;i++){
-text+=chars[Math.floor(Math.random()*chars.length)];
+t+=chars[Math.floor(Math.random()*chars.length)];
 }
-msg.innerHTML=text;
+msg.innerHTML=t;
 
 steps++;
 
@@ -243,16 +281,13 @@ document.body.style.transform="none";
 document.body.style.background="black";
 
 msg.innerHTML="...";
-setTimeout(()=>{
-cameraPhase();
-},800);
+setTimeout(cameraPhase,800);
 }
 
 },80);
-
 }
 
-// ===== FAKE CAMERA =====
+// FAKE CAMERA
 function cameraPhase(){
 
 let msg=document.getElementById("msg");
@@ -270,46 +305,36 @@ speechSynthesis.speak(s);
 
 }
 
-// ===== MENU CONTROL =====
+// MENU
 window.openMenu=function(){
-document.getElementById("main").style.display="none";
-document.getElementById("more").style.display="block";
+document.getElementById("more").classList.add("active");
 };
 
 window.back=function(){
-document.getElementById("main").style.display="block";
-document.getElementById("more").style.display="none";
+document.getElementById("more").classList.remove("active");
 };
 
-// ===== DOWNLOAD =====
+// DOWNLOAD
 window.startDownload=function(){
-
 let box=document.getElementById("moreMsg");
-let num=Math.floor(Math.random()*999999);
 let p=0;
+let num=Math.floor(Math.random()*999999);
 
 let int=setInterval(()=>{
 p+=Math.floor(Math.random()*10);
-
-box.innerHTML=`Downloading user${num}_data.zip<br>${p}%`;
+box.innerHTML=`Downloading user${num}.zip<br>${p}%`;
 
 if(p>=100){
 clearInterval(int);
 box.innerHTML="Completed";
 }
 },500);
-
 };
 
-// ===== AI =====
+// AI
 window.askAI=function(){
-
-let chat=document.getElementById("chat");
-let input=document.getElementById("chatInput");
-
-chat.innerHTML+="<br>You: "+input.value;
+chat.innerHTML+="<br>You: "+chatInput.value;
 chat.innerHTML+="<br>AI: Ready";
-
 };
 
 };
