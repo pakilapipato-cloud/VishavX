@@ -1,70 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>VishavX</title>
+<title>VishavX ULTIMATE</title>
 
 <style>
-body{
-  margin:0;
-  background:black;
-  color:#00ff00;
-  font-family:monospace;
-  text-align:center;
-  overflow:hidden;
-}
-
-canvas{
-  position:fixed;
-  top:0;
-  left:0;
-  z-index:-1;
-}
-
+body{margin:0;background:black;color:#00ff00;font-family:monospace;text-align:center;overflow:hidden;}
+canvas{position:fixed;top:0;left:0;z-index:-1;}
 .section{display:none;}
-
-.glitch{
-  font-size:30px;
-  margin-top:80px;
-  animation:glitch 0.5s infinite;
-}
-
-@keyframes glitch{
-  0%{text-shadow:2px 2px red;}
-  50%{text-shadow:-2px -2px lime;}
-  100%{text-shadow:2px -2px blue;}
-}
-
-.loader{
-  margin-top:100px;
-}
-
-.box{
-  display:none;
-}
-
-input{
-  padding:10px;
-  background:black;
-  border:1px solid red;
-  color:red;
-}
-
-button{
-  padding:10px;
-  background:red;
-  color:black;
-  border:none;
-  margin-top:10px;
-}
-
-.menu{
-  position:fixed;
-  top:10px;
-  right:10px;
-  color:red;
-  cursor:pointer;
-}
-
+.glitch{font-size:30px;margin-top:80px;animation:glitch .5s infinite;}
+@keyframes glitch{0%{text-shadow:2px 2px red;}50%{text-shadow:-2px -2px lime;}100%{text-shadow:2px -2px blue;}}
+input{padding:10px;background:black;border:1px solid red;color:red;}
+button{padding:10px;background:red;color:black;border:none;margin:5px;}
+.menu{position:fixed;top:10px;right:10px;color:red;cursor:pointer;}
+#creepy{color:red;font-size:28px;animation:blink 1s infinite;}
+@keyframes blink{50%{opacity:0;}}
 </style>
 </head>
 
@@ -74,48 +23,52 @@ button{
 
 <div class="menu" onclick="show('more')">☰ MORE</div>
 
-<div id="intro">Initializing System...</div>
-
-<div id="loader" class="loader">🤖 Repairing system...</div>
+<div id="intro">⚡ Initializing System...</div>
+<div id="loader">🤖 Robot repairing system...</div>
 
 <div id="main" class="section">
 <div class="glitch">WELCOME TO VISHAVX</div>
 
-<div class="box" id="box">
 <p>Enter 5 digit key</p>
-<input id="key" maxlength="5">
-<br>
+<input id="key" maxlength="5"><br>
 <button onclick="checkKey()">Confirm</button>
 <div id="msg"></div>
-</div>
 </div>
 
 <!-- MORE MENU -->
 <div id="more" class="section">
 <h2>Modes</h2>
+<button onclick="show('choice')">Choice</button>
 <button onclick="show('chatbot')">AI Chatbot</button>
 <button onclick="show('terminal')">Terminal</button>
 <button onclick="show('scan')">AI Scan</button>
+<button onclick="show('creepy')">Creepy</button>
 <button onclick="show('destruct')">Self Destruct</button>
 <button onclick="show('main')">Back</button>
 </div>
 
+<!-- CHOICE -->
+<div id="choice" class="section">
+<h2>Choose your path</h2>
+<button onclick="alert('Access granted')">Enter</button>
+<button onclick="alert('Exit system')">Exit</button>
+<button onclick="alert('Secret unlocked')">Secret</button>
+<button onclick="show('more')">Back</button>
+</div>
+
 <!-- CHATBOT -->
 <div id="chatbot" class="section">
-<h2>AI Chatbot</h2>
 <div id="chatBox" style="height:200px;overflow:auto;border:1px solid green;"></div>
 <input id="userInput">
 <button onclick="sendMsg()">Send</button>
-<br><br>
 <button onclick="show('more')">Back</button>
 </div>
 
 <!-- TERMINAL -->
 <div id="terminal" class="section">
-<div id="output">Type login</div>
+<div id="output">Type: login</div>
 <input id="cmd">
 <button onclick="runCmd()">Enter</button>
-<br><br>
 <button onclick="show('more')">Back</button>
 </div>
 
@@ -124,7 +77,12 @@ button{
 <input id="name">
 <button onclick="scan()">Scan</button>
 <div id="scanResult"></div>
-<br>
+<button onclick="show('more')">Back</button>
+</div>
+
+<!-- CREEPY -->
+<div id="creepy" class="section">
+YOU ARE BEING WATCHED 👁️
 <button onclick="show('more')">Back</button>
 </div>
 
@@ -132,34 +90,21 @@ button{
 <div id="destruct" class="section">
 <div id="timer">10</div>
 <button onclick="startDestruct()">Start</button>
-<br>
 <button onclick="show('more')">Back</button>
 </div>
 
 <script>
 
 // MATRIX
-let c=document.getElementById("matrix");
-let ctx=c.getContext("2d");
-c.height=window.innerHeight;
-c.width=window.innerWidth;
-let letters="01".split("");
-let font_size=14;
-let columns=c.width/font_size;
-let drops=[];
-for(let x=0;x<columns;x++) drops[x]=1;
-function draw(){
-ctx.fillStyle="rgba(0,0,0,0.05)";
+let c=matrix,ctx=c.getContext("2d");
+c.height=innerHeight;c.width=innerWidth;
+let letters="01".split(""),drops=[];
+for(let x=0;x<c.width/14;x++)drops[x]=1;
+setInterval(()=>{ctx.fillStyle="rgba(0,0,0,.05)";
 ctx.fillRect(0,0,c.width,c.height);
 ctx.fillStyle="#0F0";
-ctx.font=font_size+"px monospace";
-for(let i=0;i<drops.length;i++){
-let text=letters[Math.floor(Math.random()*letters.length)];
-ctx.fillText(text,i*font_size,drops[i]*font_size);
-if(drops[i]*font_size>c.height) drops[i]=0;
-drops[i]++;
-}}
-setInterval(draw,33);
+drops.forEach((y,i)=>{ctx.fillText(letters[Math.random()*2|0],i*14,y);
+drops[i]=y>c.height||Math.random()>0.975?0:y+14;});},33);
 
 // NAV
 function show(id){
@@ -169,97 +114,72 @@ document.getElementById(id).style.display='block';
 
 // VOICE
 function speak(text){
-let speech=new SpeechSynthesisUtterance(text);
-speech.lang="en-US";
-speech.pitch=1.2;
-speech.rate=1;
-speechSynthesis.speak(speech);
-}
-
-// SOUND
-function beep(){
-let ctx=new(window.AudioContext||window.webkitAudioContext)();
-let osc=ctx.createOscillator();
-osc.frequency.value=300;
-osc.connect(ctx.destination);
-osc.start();
-setTimeout(()=>osc.stop(),150);
+let s=new SpeechSynthesisUtterance(text);
+s.lang="en-US";s.pitch=1.2;
+speechSynthesis.speak(s);
 }
 
 // FLOW
-setTimeout(()=>{document.getElementById("intro").style.display="none";},4000);
+setTimeout(()=>intro.style.display="none",4000);
 setTimeout(()=>{
-document.getElementById("loader").style.display="none";
+loader.style.display="none";
 show('main');
-document.getElementById("box").style.display="block";
 speak("Please enter 5 digit key");
 },7000);
 
 // LOGIN
 let attempts=5;
 function checkKey(){
-let val=document.getElementById('key').value;
-let msg=document.getElementById('msg');
-
-if(val.length!==5){
-msg.innerHTML="Enter 5 digit code";
-speak("Please enter 5 digit code");
-return;
-}
-
-if(val==="siya0"){
+let v=key.value;
+if(v.length!=5){msg.innerHTML="Enter 5 digit";speak("Enter 5 digit code");return;}
+if(v==="siya0"){
 msg.innerHTML="Access Granted";
 speak("Access granted");
-setTimeout(()=>{
-window.location.href="https://monnie.neocities.org/";
-},1500);
+setTimeout(()=>location.href="https://monnie.neocities.org/",1500);
 }else{
 attempts--;
-msg.innerHTML="Wrong code ("+attempts+" left)";
-speak("Wrong code entered");
-if(navigator.vibrate) navigator.vibrate(300);
-beep();
+msg.innerHTML="Wrong code ("+attempts+")";
+speak("Wrong code");
+navigator.vibrate?.(300);
 }
 }
 
 // CHATBOT
 function sendMsg(){
-let input=document.getElementById('userInput');
-let chat=document.getElementById('chatBox');
-let msg=input.value;
-chat.innerHTML+="<p>You: "+msg+"</p>";
-chat.innerHTML+="<p>AI: Processing...</p>";
-input.value="";
+let m=userInput.value.toLowerCase();
+chatBox.innerHTML+="<p>You:"+m+"</p>";
+let r="I don't understand";
+if(m.includes("hello")) r="Hello Vishav 😎";
+if(m.includes("hack")) r="Accessing system...";
+chatBox.innerHTML+="<p>AI:"+r+"</p>";
+userInput.value="";
 }
 
 // TERMINAL
 function runCmd(){
-let cmd=document.getElementById('cmd').value;
-let out=document.getElementById('output');
-out.innerHTML+="<br>"+cmd;
+let c=cmd.value;
+output.innerHTML+="<br>"+c;
+if(c=="login")output.innerHTML+="<br>Accessing...";
+if(c=="unlock")output.innerHTML+="<br>Unlocked";
 }
 
 // SCAN
 function scan(){
-let name=document.getElementById('name').value;
-document.getElementById('scanResult').innerHTML="Analyzing "+name+"...";
+scanResult.innerHTML="Analyzing...";
+setTimeout(()=>scanResult.innerHTML="Threat Level: HIGH 🔥",2000);
 }
 
 // DESTRUCT
 function startDestruct(){
 let t=10;
-let timer=document.getElementById('timer');
 let i=setInterval(()=>{
-t--;
-timer.innerHTML=t;
+timer.innerHTML=--t;
 if(t==0){
 clearInterval(i);
-document.body.innerHTML="<h1 style='color:red'>SYSTEM DESTROYED</h1>";
-}
-},1000);
+document.body.innerHTML="<h1 style='color:red'>SYSTEM DESTROYED 💀</h1>";
+}},1000);
 }
 
 </script>
-
 </body>
 </html>
