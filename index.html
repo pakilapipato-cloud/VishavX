@@ -1,19 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>VishavX ULTIMATE</title>
+<title>VishavX FINAL</title>
 
 <style>
 body{margin:0;background:black;color:#0f0;font-family:monospace;text-align:center;overflow:hidden;}
 canvas{position:fixed;top:0;left:0;z-index:-1;}
 #panel{position:fixed;left:0;top:0;font-size:12px;color:red;padding:10px;text-align:left;}
 #username{position:fixed;right:10px;top:10px;color:lime;}
-.glitch{animation:glitch .2s infinite;}
-@keyframes glitch{
-0%{transform:translate(2px,2px);}
-50%{transform:translate(-2px,-2px);}
-100%{transform:translate(2px,-2px);}
-}
 button,input{padding:10px;margin:5px;background:black;color:lime;border:1px solid lime;}
 </style>
 
@@ -27,7 +21,7 @@ button,input{padding:10px;margin:5px;background:black;color:lime;border:1px soli
 <div id="intro"></div>
 
 <div id="main" style="display:none;">
-<h2 class="glitch">VISHAVX SYSTEM</h2>
+<h2>VISHAVX SYSTEM</h2>
 
 <input id="key" placeholder="Enter code">
 <button onclick="checkKey()">Confirm</button>
@@ -59,13 +53,13 @@ localStorage.setItem("name",name);
 username.innerHTML="user_"+name;
 
 // ===== INTRO =====
-let text=["Initializing system...","Loading modules...","Access granted..."];
+let txt=["Initializing system...","Loading modules...","Access granted..."];
 let i=0,j=0;
 
 function introAnim(){
-if(i<text.length){
-if(j<text[i].length){
-intro.innerHTML+=text[i][j];
+if(i<txt.length){
+if(j<txt[i].length){
+intro.innerHTML+=txt[i][j];
 j++;setTimeout(introAnim,40);
 }else{
 intro.innerHTML+="<br>";i++;j=0;setTimeout(introAnim,300);
@@ -136,12 +130,13 @@ startBlock();
 },1500);
 }
 
-// ===== BLOCK =====
+// ===== PRO GLITCH =====
 function startBlock(){
-blocked=true;
 
+blocked=true;
 let time=30;
 
+// TIMER
 let timer=setInterval(()=>{
 msg.innerHTML=`🔒 BLOCKED ${time}s`;
 time--;
@@ -154,35 +149,59 @@ msg.innerHTML="Retry";
 }
 },1000);
 
-// GLITCH + SHAKE
-let g=0;
-let glitch=setInterval(()=>{
-document.body.style.background=g%2?"pink":"black";
-document.body.style.transform=`rotate(${g*3}deg)`;
-g++;
+// GLITCH
+let steps=0;
 
-if(g>12){
+let glitch=setInterval(()=>{
+
+document.body.style.transform =
+`translate(${Math.random()*20-10}px, ${Math.random()*20-10}px)
+ scale(${1+Math.random()*0.2})
+ rotate(${Math.random()*10-5}deg)`;
+
+let colors=["black","pink","white"];
+document.body.style.background=colors[Math.floor(Math.random()*colors.length)];
+
+let chars="█▓▒░<>/\\{}[]#@$%&*!?";
+let txt="";
+for(let i=0;i<30;i++){
+txt+=chars[Math.floor(Math.random()*chars.length)];
+}
+msg.innerHTML=txt;
+
+navigator.vibrate?.(100);
+
+steps++;
+
+if(steps>25){
 clearInterval(glitch);
 document.body.style.transform="none";
+document.body.style.background="black";
+
+msg.innerHTML="...";
+setTimeout(()=>{
 cameraPhase();
-}
-},100);
+},800);
 }
 
-// ===== CAMERA =====
+},80);
+}
+
+// ===== FAKE CAMERA (NO PERMISSION) =====
 function cameraPhase(){
-msg.innerHTML="Initializing camera...<br>Face detected";
 
-navigator.mediaDevices.getUserMedia({video:true})
-.then(stream=>{
-cam.srcObject=stream;
-});
+msg.innerHTML=`
+Initializing camera...<br>
+Scanning...<br>
+Face detected 👁️
+`;
 
 setTimeout(()=>{
 let s=new SpeechSynthesisUtterance("I can see you");
 s.rate=0.8;
 speechSynthesis.speak(s);
 },1000);
+
 }
 
 // ===== TEXT TRIGGER =====
