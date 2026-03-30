@@ -48,6 +48,7 @@ input{
   border:1px solid red;
   color:red;
   text-align:center;
+  font-size:16px;
 }
 
 button{
@@ -56,11 +57,13 @@ button{
   color:black;
   border:none;
   margin-top:10px;
+  cursor:pointer;
 }
 
 .error{
   color:red;
   margin-top:10px;
+  font-size:14px;
 }
 </style>
 
@@ -84,20 +87,32 @@ button{
 </div>
 
 <script>
+
+// Loader hide + box show
 setTimeout(function(){
   document.querySelector('.loader').style.display='none';
   document.getElementById('box').style.display='block';
 },3000);
 
+// Check code
 function checkKey(){
   var val = document.getElementById('key').value;
 
   if(val.length !== 4){
     document.getElementById('msg').innerHTML = "Enter 4 digit code!";
-  } else {
+  } 
+  else if(val === "1718"){   // 🔐 YAHAN APNA SECRET CODE DAL
+    document.getElementById('msg').innerHTML = "Access Granted ✅";
+    
+    setTimeout(function(){
+      window.location.href = "https://google.com"; // 🔗 REDIRECT LINK
+    },1000);
+  }
+  else {
     document.getElementById('msg').innerHTML = "Your code is incorrect, try again...";
   }
 }
+
 </script>
 
 </body>
