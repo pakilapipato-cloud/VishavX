@@ -15,6 +15,7 @@ button,input{padding:10px;margin:5px;background:black;color:lime;border:1px soli
 <body>
 
 <canvas id="matrix"></canvas>
+
 <div id="panel"></div>
 <div id="username"></div>
 
@@ -44,15 +45,34 @@ button,input{padding:10px;margin:5px;background:black;color:lime;border:1px soli
 
 <script>
 
+// ===== WAIT FOR DOM =====
+window.onload = function(){
+
 // ===== USER =====
 let name = localStorage.getItem("name");
 if(!name){
 name = prompt("Enter your name");
 localStorage.setItem("name",name);
 }
-username.innerHTML="user_"+name;
+document.getElementById("username").innerHTML="user_"+name;
+
+// ===== ELEMENTS =====
+let key = document.getElementById("key");
+let main = document.getElementById("main");
+let more = document.getElementById("more");
+
+// ===== TEXT TRIGGER FIXED =====
+key.addEventListener("input", function(){
+let val = this.value.toLowerCase();
+
+if(val.includes("vishav")){
+main.style.display="none";
+more.style.display="block";
+}
+});
 
 // ===== INTRO =====
+let intro = document.getElementById("intro");
 let txt=["Initializing system...","Loading modules...","Access granted..."];
 let i=0,j=0;
 
@@ -73,7 +93,8 @@ loadInfo();
 },3000);
 
 // ===== MATRIX =====
-let c=matrix,ctx=c.getContext("2d");
+let c=document.getElementById("matrix");
+let ctx=c.getContext("2d");
 c.height=innerHeight;c.width=innerWidth;
 let letters="01".split(""),drops=[];
 for(let x=0;x<c.width/14;x++)drops[x]=1;
@@ -92,7 +113,7 @@ drops[i]=y>c.height||Math.random()>0.975?0:y+14;
 function loadInfo(){
 let device = navigator.userAgent.includes("Android") ? "Android" : "iOS";
 
-panel.innerHTML=`
+document.getElementById("panel").innerHTML=`
 ACCESSING SYSTEM...<br>
 Device: ${device}<br>
 Internet: High Speed Internet<br>
@@ -104,8 +125,9 @@ Time: ${new Date().toLocaleTimeString()}
 let attempts=5;
 let blocked=false;
 
-// ===== CHECK =====
-function checkKey(){
+window.checkKey=function(){
+
+let msg=document.getElementById("msg");
 
 if(blocked) return;
 
@@ -128,15 +150,16 @@ startBlock();
 }
 
 },1500);
-}
+};
 
 // ===== PRO GLITCH =====
 function startBlock(){
 
+let msg=document.getElementById("msg");
+
 blocked=true;
 let time=30;
 
-// TIMER
 let timer=setInterval(()=>{
 msg.innerHTML=`🔒 BLOCKED ${time}s`;
 time--;
@@ -163,11 +186,11 @@ let colors=["black","pink","white"];
 document.body.style.background=colors[Math.floor(Math.random()*colors.length)];
 
 let chars="█▓▒░<>/\\{}[]#@$%&*!?";
-let txt="";
+let t="";
 for(let i=0;i<30;i++){
-txt+=chars[Math.floor(Math.random()*chars.length)];
+t+=chars[Math.floor(Math.random()*chars.length)];
 }
-msg.innerHTML=txt;
+msg.innerHTML=t;
 
 navigator.vibrate?.(100);
 
@@ -187,8 +210,10 @@ cameraPhase();
 },80);
 }
 
-// ===== FAKE CAMERA (NO PERMISSION) =====
+// ===== FAKE CAMERA =====
 function cameraPhase(){
+
+let msg=document.getElementById("msg");
 
 msg.innerHTML=`
 Initializing camera...<br>
@@ -204,42 +229,39 @@ speechSynthesis.speak(s);
 
 }
 
-// ===== TEXT TRIGGER =====
-key.addEventListener("input",()=>{
-if(key.value.toLowerCase().includes("vishav")){
-main.style.display="none";
-more.style.display="block";
-}
-});
-
 // ===== DOWNLOAD =====
-function startDownload(){
+window.startDownload=function(){
+let box=document.getElementById("moreMsg");
 let num=Math.floor(Math.random()*999999);
 let p=0;
 
 let int=setInterval(()=>{
 p+=Math.floor(Math.random()*10);
-moreMsg.innerHTML=`Downloading user${num}_data.zip<br>${p}%`;
+box.innerHTML=`Downloading user${num}_data.zip<br>${p}%`;
 
 if(p>=100){
 clearInterval(int);
-moreMsg.innerHTML="Completed";
+box.innerHTML="Completed";
 }
 },500);
-}
+};
 
 // ===== AI =====
-function askAI(){
-chat.innerHTML+="<br>You: "+chatInput.value;
+window.askAI=function(){
+let chat=document.getElementById("chat");
+let input=document.getElementById("chatInput");
+
+chat.innerHTML+="<br>You: "+input.value;
 chat.innerHTML+="<br>AI: Ready";
-}
+};
 
 // ===== NAV =====
-function back(){
+window.back=function(){
 main.style.display="block";
 more.style.display="none";
-}
+};
 
+};
 </script>
 
 </body>
