@@ -1,38 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>VishavX FINAL</title>
+<title>VishavX GOD MODE</title>
 
 <style>
-body{
-margin:0;
-background:black;
-color:#0f0;
-font-family:Courier New;
-text-align:center;
-overflow:hidden;
-}
+body{margin:0;background:black;color:#0f0;font-family:Courier New;text-align:center;overflow:hidden;}
+canvas{position:fixed;top:0;left:0;z-index:-1;}
 
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
-}
-
-/* PANEL */
 #panel{
 position:fixed;
 left:10px;
 top:10px;
 color:red;
-background:rgba(0,0,0,0.5);
+background:rgba(0,0,0,0.6);
 padding:10px;
 border:1px solid red;
 border-radius:10px;
+font-size:12px;
 }
 
-/* USER */
 #username{
 position:fixed;
 right:10px;
@@ -40,7 +26,6 @@ top:10px;
 color:lime;
 }
 
-/* SIDE MENU BUTTON */
 #menuBtn{
 position:fixed;
 right:0;
@@ -54,12 +39,8 @@ cursor:pointer;
 z-index:1000;
 }
 
-/* MAIN */
-#main{
-margin-top:120px;
-}
+#main{margin-top:120px;}
 
-/* SLIDE MENU */
 #more{
 position:fixed;
 right:-100%;
@@ -73,12 +54,9 @@ padding-top:50px;
 z-index:999;
 }
 
-#more.active{
-right:0;
-}
+#more.active{right:0;}
 
-/* INPUT */
-input{
+input,button{
 padding:10px;
 margin:8px;
 background:black;
@@ -86,26 +64,9 @@ color:lime;
 border:1px solid lime;
 }
 
-/* BUTTON */
-button{
-padding:10px;
-margin:8px;
-background:black;
-color:lime;
-border:1px solid lime;
-cursor:pointer;
-}
+button:hover{background:lime;color:black;}
 
-button:hover{
-background:lime;
-color:black;
-}
-
-/* GLITCH */
-h2{
-animation:glitch .5s infinite;
-}
-
+h2{animation:glitch .5s infinite;}
 @keyframes glitch{
 0%{text-shadow:2px 2px red;}
 50%{text-shadow:-2px -2px lime;}
@@ -121,7 +82,6 @@ animation:glitch .5s infinite;
 <div id="panel"></div>
 <div id="username"></div>
 
-<!-- ALWAYS VISIBLE -->
 <div id="menuBtn" onclick="openMenu()">☰ MORE</div>
 
 <div id="intro"></div>
@@ -136,13 +96,17 @@ animation:glitch .5s infinite;
 </div>
 
 <div id="more">
-<h2>MORE MENU</h2>
+<h2>CONTROL PANEL</h2>
 
 <input id="chatInput">
 <button onclick="askAI()">Send</button>
 <div id="chat"></div>
 
-<button onclick="startDownload()">Accept</button>
+<button onclick="startDownload()">Download</button>
+<button onclick="performanceTest()">Performance Test</button>
+<button onclick="mode3am()">3AM Mode</button>
+<button onclick="distortion()">SYSTEM DISTORTION</button>
+
 <div id="moreMsg"></div>
 
 <button onclick="back()">Back</button>
@@ -198,12 +162,33 @@ drops[i]=y>c.height||Math.random()>0.975?0:y+14;
 });
 },33);
 
-// INFO
-function loadInfo(){
+// DEVICE PANEL
+async function loadInfo(){
 let device=navigator.userAgent.includes("Android")?"Android":"iOS";
+let res=screen.width+" x "+screen.height;
+let tz=Intl.DateTimeFormat().resolvedOptions().timeZone;
+let lang=navigator.language;
+let net=navigator.onLine?"Online":"Offline";
+let cores=navigator.hardwareConcurrency||4;
+
+let cpu=cores>=8?"High Performance CPU":
+        cores>=4?"Mid Performance CPU":"Basic CPU";
+
+let battery="Unknown";
+if(navigator.getBattery){
+let b=await navigator.getBattery();
+battery=Math.floor(b.level*100)+"%";
+}
+
 panel.innerHTML=`
 Device: ${device}<br>
-Internet: High Speed<br>
+Resolution: ${res}<br>
+Timezone: ${tz}<br>
+Location: Jammu<br>
+Language: ${lang}<br>
+Network: ${net}<br>
+CPU: ${cpu}<br>
+Battery: ${battery}<br>
 Time: ${new Date().toLocaleTimeString()}
 `;
 }
@@ -213,7 +198,6 @@ let attempts=5;
 let blocked=false;
 
 window.checkKey=function(){
-
 let msg=document.getElementById("msg");
 
 if(blocked) return;
@@ -221,27 +205,19 @@ if(blocked) return;
 msg.innerHTML="Synchronizing...";
 
 setTimeout(()=>{
-
-if(document.getElementById("key").value==="siya0"){
-openMenu();
-return;
-}
+if(key.value==="siya0"){openMenu();return;}
 
 attempts--;
 msg.innerHTML="Wrong ("+attempts+")";
 
-if(attempts<=0){
-blockSystem();
-}
-
+if(attempts<=0){blockSystem();}
 },1500);
 };
 
-// BLOCK + GLITCH
+// GLITCH BLOCK
 function blockSystem(){
 
 let msg=document.getElementById("msg");
-
 blocked=true;
 let time=30;
 
@@ -260,7 +236,6 @@ msg.innerHTML="Retry";
 let steps=0;
 
 let glitch=setInterval(()=>{
-
 document.body.style.transform=
 `translate(${Math.random()*20-10}px,${Math.random()*20-10}px)
 scale(${1+Math.random()*0.2})
@@ -290,47 +265,27 @@ setTimeout(cameraPhase,800);
 },80);
 }
 
-// FAKE CAMERA
+// CAMERA FAKE
 function cameraPhase(){
-
-let msg=document.getElementById("msg");
-
-msg.innerHTML=`
-Initializing camera...<br>
-Scanning...<br>
-Face detected 👁️
-`;
-
+msg.innerHTML="Initializing camera...<br>Face detected";
 setTimeout(()=>{
-let s=new SpeechSynthesisUtterance("I can see you");
-speechSynthesis.speak(s);
+speechSynthesis.speak(new SpeechSynthesisUtterance("I can see you"));
 },1000);
-
 }
 
 // MENU
-window.openMenu=function(){
-document.getElementById("more").classList.add("active");
-};
-
-window.back=function(){
-document.getElementById("more").classList.remove("active");
-};
+window.openMenu=()=>more.classList.add("active");
+window.back=()=>more.classList.remove("active");
 
 // DOWNLOAD
 window.startDownload=function(){
+let p=0,num=Math.floor(Math.random()*999999);
 let box=document.getElementById("moreMsg");
-let p=0;
-let num=Math.floor(Math.random()*999999);
 
 let int=setInterval(()=>{
 p+=Math.floor(Math.random()*10);
 box.innerHTML=`Downloading user${num}.zip<br>${p}%`;
-
-if(p>=100){
-clearInterval(int);
-box.innerHTML="Completed";
-}
+if(p>=100){clearInterval(int);box.innerHTML="Completed";}
 },500);
 };
 
@@ -339,6 +294,40 @@ window.askAI=function(){
 chat.innerHTML+="<br>You: "+chatInput.value;
 chat.innerHTML+="<br>AI: Ready";
 };
+
+// PERFORMANCE TEST
+function performanceTest(){
+let start=performance.now(),frames=0;
+
+function loop(){
+frames++;
+if(performance.now()-start<1000){
+requestAnimationFrame(loop);
+}else{
+moreMsg.innerHTML=`FPS: ${frames}`;
+}
+}
+loop();
+}
+
+// 3AM MODE
+function mode3am(){
+if(new Date().getHours()!=3){
+alert("Only at 3AM");return;
+}
+
+setInterval(()=>{
+speechSynthesis.speak(
+new SpeechSynthesisUtterance("I see you")
+);
+},3000);
+}
+
+// DISTORTION FINAL
+function distortion(){
+document.body.innerHTML="<h1 style='color:white;'>SYSTEM IS DESTROYED</h1>";
+document.body.style.background="#555";
+}
 
 };
 </script>
