@@ -1,13 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<html xmlns='http://www.w3.org/1999/xhtml'
-xmlns:b='http://www.google.com/2005/gml/b'
-xmlns:data='http://www.google.com/2005/gml/data'
-xmlns:expr='http://www.google.com/2005/gml/expr'>
-
+<!DOCTYPE html>
+<html>
 <head>
 <title>VishavX</title>
 
-<b:skin><![CDATA[
+<style>
 body{
   margin:0;
   background:black;
@@ -52,7 +48,6 @@ input{
   border:1px solid red;
   color:red;
   text-align:center;
-  font-size:16px;
 }
 
 button{
@@ -66,30 +61,26 @@ button{
 .error{
   color:red;
   margin-top:10px;
-  font-size:14px;
 }
-]]></b:skin>
+</style>
 
 </head>
 
 <body>
 
-<b:section id='main' showaddelement='no'>
+<div class="glow">WELCOME TO VISHAVX</div>
 
-<div class='glow'>WELCOME TO VISHAVX</div>
+<div class="loader"></div>
 
-<div class='loader'></div>
+<div class="box" id="box">
+  <p style="color:red;">Enter 4 digit code</p>
 
-<div class='box' id='box'>
-  <p style='color:red;'>Enter 4 digit code</p>
+  <input id="key" maxlength="4" placeholder="####">
+  <br>
 
-  <input id='key' type='text' maxlength='4' placeholder='####'/>
+  <button onclick="checkKey()">Confirm</button>
 
-  <br/>
-
-  <button onclick='checkKey()'>Confirm</button>
-
-  <div id='msg' class='error'></div>
+  <div id="msg" class="error"></div>
 </div>
 
 <script>
@@ -108,8 +99,6 @@ function checkKey(){
   }
 }
 </script>
-
-</b:section>
 
 </body>
 </html>
