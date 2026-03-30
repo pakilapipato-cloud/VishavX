@@ -1,185 +1,246 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>VishavX ULTIMATE</title>
+<title>VishavX GOD MODE</title>
 
 <style>
-body{margin:0;background:black;color:#00ff00;font-family:monospace;text-align:center;overflow:hidden;}
+body{margin:0;background:black;color:#0f0;font-family:monospace;text-align:center;overflow:hidden;}
 canvas{position:fixed;top:0;left:0;z-index:-1;}
-.section{display:none;}
-.glitch{font-size:30px;margin-top:80px;animation:glitch .5s infinite;}
+#trackingPanel{position:fixed;left:0;top:0;font-size:12px;color:lime;padding:10px;text-align:left;}
+.glitch{animation:glitch .5s infinite;}
 @keyframes glitch{0%{text-shadow:2px 2px red;}50%{text-shadow:-2px -2px lime;}100%{text-shadow:2px -2px blue;}}
-input{padding:10px;background:black;border:1px solid red;color:red;}
-button{padding:10px;background:red;color:black;border:none;margin:5px;}
-.menu{position:fixed;top:10px;right:10px;color:red;cursor:pointer;}
-#creepy{color:red;font-size:28px;animation:blink 1s infinite;}
-@keyframes blink{50%{opacity:0;}}
 </style>
-</head>
 
+</head>
 <body>
 
 <canvas id="matrix"></canvas>
 
-<div class="menu" onclick="show('more')">☰ MORE</div>
+<div id="trackingPanel"></div>
 
-<div id="intro">⚡ Initializing System...</div>
-<div id="loader">🤖 Robot repairing system...</div>
+<div id="intro"></div>
 
-<div id="main" class="section">
-<div class="glitch">WELCOME TO VISHAVX</div>
+<div id="main" style="display:none;">
+<h2 class="glitch">WELCOME TO VISHAVX</h2>
 
-<p>Enter 5 digit key</p>
+<p>Try saying "vishav"</p>
+
 <input id="key" maxlength="5"><br>
+<div id="typingMsg"></div>
+
 <button onclick="checkKey()">Confirm</button>
 <div id="msg"></div>
 </div>
 
-<!-- MORE MENU -->
-<div id="more" class="section">
-<h2>Modes</h2>
-<button onclick="show('choice')">Choice</button>
-<button onclick="show('chatbot')">AI Chatbot</button>
-<button onclick="show('terminal')">Terminal</button>
-<button onclick="show('scan')">AI Scan</button>
-<button onclick="show('creepy')">Creepy</button>
-<button onclick="show('destruct')">Self Destruct</button>
-<button onclick="show('main')">Back</button>
-</div>
-
-<!-- CHOICE -->
-<div id="choice" class="section">
-<h2>Choose your path</h2>
-<button onclick="alert('Access granted')">Enter</button>
-<button onclick="alert('Exit system')">Exit</button>
-<button onclick="alert('Secret unlocked')">Secret</button>
-<button onclick="show('more')">Back</button>
-</div>
-
-<!-- CHATBOT -->
-<div id="chatbot" class="section">
-<div id="chatBox" style="height:200px;overflow:auto;border:1px solid green;"></div>
-<input id="userInput">
-<button onclick="sendMsg()">Send</button>
-<button onclick="show('more')">Back</button>
-</div>
-
-<!-- TERMINAL -->
-<div id="terminal" class="section">
-<div id="output">Type: login</div>
-<input id="cmd">
-<button onclick="runCmd()">Enter</button>
-<button onclick="show('more')">Back</button>
-</div>
-
-<!-- SCAN -->
-<div id="scan" class="section">
-<input id="name">
-<button onclick="scan()">Scan</button>
-<div id="scanResult"></div>
-<button onclick="show('more')">Back</button>
-</div>
-
-<!-- CREEPY -->
-<div id="creepy" class="section">
-YOU ARE BEING WATCHED 👁️
-<button onclick="show('more')">Back</button>
-</div>
-
-<!-- DESTRUCT -->
-<div id="destruct" class="section">
-<div id="timer">10</div>
-<button onclick="startDestruct()">Start</button>
-<button onclick="show('more')">Back</button>
+<div id="more" style="display:none;">
+<button onclick="startDownload()">Accept</button>
+<button onclick="creepyMode()">3AM MODE</button>
+<button onclick="back()">Back</button>
 </div>
 
 <script>
 
-// MATRIX
+// ===== VOICE =====
+function speak(t,p=1){
+let s=new SpeechSynthesisUtterance(t);
+s.lang="en-US";s.rate=0.9;s.pitch=p;
+speechSynthesis.speak(s);
+}
+
+// ===== INTRO TYPING =====
+let introText=[
+"Initializing system...",
+"Loading modules...",
+"Accessing secure server...",
+"System ready..."
+];
+let i=0,j=0;
+
+function typeIntro(){
+if(i<introText.length){
+if(j<introText[i].length){
+intro.innerHTML+=introText[i][j];
+j++;setTimeout(typeIntro,40);
+}else{
+intro.innerHTML+="<br>";
+i++;j=0;setTimeout(typeIntro,300);
+}}
+}
+typeIntro();
+
+setTimeout(()=>{
+intro.style.display="none";
+main.style.display="block";
+speak("Please enter five digit key");
+startVoice();
+},4000);
+
+// ===== MATRIX =====
 let c=matrix,ctx=c.getContext("2d");
 c.height=innerHeight;c.width=innerWidth;
 let letters="01".split(""),drops=[];
 for(let x=0;x<c.width/14;x++)drops[x]=1;
-setInterval(()=>{ctx.fillStyle="rgba(0,0,0,.05)";
+setInterval(()=>{
+ctx.fillStyle="rgba(0,0,0,.05)";
 ctx.fillRect(0,0,c.width,c.height);
 ctx.fillStyle="#0F0";
-drops.forEach((y,i)=>{ctx.fillText(letters[Math.random()*2|0],i*14,y);
-drops[i]=y>c.height||Math.random()>0.975?0:y+14;});},33);
+drops.forEach((y,i)=>{
+ctx.fillText(letters[Math.random()*2|0],i*14,y);
+drops[i]=y>c.height||Math.random()>0.975?0:y+14;
+});
+},33);
 
-// NAV
-function show(id){
-document.querySelectorAll('.section').forEach(s=>s.style.display='none');
-document.getElementById(id).style.display='block';
+// ===== REAL DATA =====
+async function loadInfo(){
+
+let battery="Unknown";
+if(navigator.getBattery){
+let b=await navigator.getBattery();
+battery=Math.floor(b.level*100)+"%";
 }
 
-// VOICE
-function speak(text){
-let s=new SpeechSynthesisUtterance(text);
-s.lang="en-US";s.pitch=1.2;
-speechSynthesis.speak(s);
+let connection=navigator.connection?.effectiveType||"Unknown";
+
+trackingPanel.innerHTML=`
+ACCESSING SYSTEM...<br>
+Device:${navigator.platform}<br>
+Browser:${navigator.userAgent}<br>
+CPU:${navigator.hardwareConcurrency}<br>
+RAM:${navigator.deviceMemory}GB<br>
+Screen:${screen.width}x${screen.height}<br>
+Timezone:${Intl.DateTimeFormat().resolvedOptions().timeZone}<br>
+Network:${connection}<br>
+Battery:${battery}<br>
+Time:${new Date().toLocaleTimeString()}
+`;
+}
+loadInfo();
+
+// ===== TYPING =====
+key.oninput=()=>typingMsg.innerHTML=key.value.length<5?"Typing...":"";
+
+// ===== VOICE COMMAND =====
+function startVoice(){
+let rec=new(window.SpeechRecognition||webkitSpeechRecognition)();
+rec.onresult=e=>{
+let t=e.results[0][0].transcript.toLowerCase();
+if(t.includes("vishav")){
+more.style.display="block";
+main.style.display="none";
+speak("Opening menu");
+}
+};
+rec.start();
 }
 
-// FLOW
-setTimeout(()=>intro.style.display="none",4000);
-setTimeout(()=>{
-loader.style.display="none";
-show('main');
-speak("Please enter 5 digit key");
-},7000);
+// ===== MEMORY =====
+function remember(){
+localStorage.setItem("history",(parseInt(localStorage.getItem("history")||0)+1));
+}
 
-// LOGIN
-let attempts=5;
+// ===== SECURITY =====
+let attempts=parseInt(localStorage.getItem("attempts"))||5;
+const BLOCK=3600000;
+
+function getIP(){
+let ip=localStorage.getItem("ip");
+if(ip)return ip;
+ip="192.168."+Math.random()*255|0+"."+Math.random()*255|0;
+localStorage.setItem("ip",ip);
+return ip;
+}
+
+function countdown(){
+let end=parseInt(localStorage.getItem("block"));
+let int=setInterval(()=>{
+let r=end-Date.now();
+if(r<=0){localStorage.clear();location.reload();}
+msg.innerHTML=`🔒 BLOCKED<br>IP:${getIP()}<br>${Math.floor(r/60000)}m ${Math.floor(r%60000/1000)}s`;
+},1000);
+}
+
+// ===== TERMINAL =====
+function terminal(){
+let lines=["> accessing..."," > decrypting..."," > downloading..."];
+let i=0;
+let int=setInterval(()=>{
+msg.innerHTML+="<br>"+lines[i];
+i++;
+if(i>=lines.length)clearInterval(int);
+},800);
+}
+
+// ===== GLITCH =====
+function glitch(){
+let i=0;
+let int=setInterval(()=>{
+document.body.style.transform=`scale(${1+i*0.02}) rotate(${i*3}deg)`;
+document.body.style.background=i%2?"red":"black";
+i++;
+if(i>10){clearInterval(int);camera();}
+},100);
+}
+
+// ===== CAMERA =====
+function camera(){
+msg.innerHTML="Accessing camera...<br>Face detected 👁️";
+speak("Accessing camera");
+setTimeout(()=>{speak("I can see you",0.6);block();},2000);
+}
+
+// ===== BLOCK =====
+function block(){
+localStorage.setItem("block",Date.now()+BLOCK);
+countdown();
+}
+
+// ===== LOGIN =====
 function checkKey(){
+if(localStorage.getItem("block")){countdown();return;}
 let v=key.value;
-if(v.length!=5){msg.innerHTML="Enter 5 digit";speak("Enter 5 digit code");return;}
-if(v==="siya0"){
-msg.innerHTML="Access Granted";
-speak("Access granted");
-setTimeout(()=>location.href="https://monnie.neocities.org/",1500);
-}else{
-attempts--;
-msg.innerHTML="Wrong code ("+attempts+")";
-speak("Wrong code");
-navigator.vibrate?.(300);
-}
+if(v==="siya0"){msg.innerHTML="Access Granted";return;}
+attempts--;localStorage.setItem("attempts",attempts);
+msg.innerHTML="Wrong ("+attempts+")<br>Tracking...<br>IP:"+getIP();
+remember();
+if(attempts<=0){terminal();setTimeout(glitch,3000);}
 }
 
-// CHATBOT
-function sendMsg(){
-let m=userInput.value.toLowerCase();
-chatBox.innerHTML+="<p>You:"+m+"</p>";
-let r="I don't understand";
-if(m.includes("hello")) r="Hello Vishav 😎";
-if(m.includes("hack")) r="Accessing system...";
-chatBox.innerHTML+="<p>AI:"+r+"</p>";
-userInput.value="";
+// ===== DOWNLOAD =====
+function startDownload(){
+let num=Math.floor(Math.random()*999999);
+let p=0;
+let int=setInterval(()=>{
+p+=Math.random()*10|0;
+msg.innerHTML=`Downloading user${num}_data.zip<br>${p}%`;
+if(p>=100){clearInterval(int);msg.innerHTML="Done";}
+},500);
 }
 
-// TERMINAL
-function runCmd(){
-let c=cmd.value;
-output.innerHTML+="<br>"+c;
-if(c=="login")output.innerHTML+="<br>Accessing...";
-if(c=="unlock")output.innerHTML+="<br>Unlocked";
+// ===== SECRET =====
+let s=document.createElement("div");
+s.style.position="fixed";s.style.width="50px";s.style.height="50px";
+s.style.top="50%";s.style.left="50%";s.style.opacity="0";
+s.onclick=()=>{
+document.body.innerHTML="<h2>FILES</h2><p>camera_logs.db</p><p>passwords.txt</p><button onclick='glitch()'>OPEN</button>";
+};
+document.body.appendChild(s);
+
+// ===== 3AM MODE =====
+function creepyMode(){
+if(new Date().getHours()==3){
+let w=["I see you","Don't move","Behind you","Run","Game over"];
+let i=0;
+setInterval(()=>{speak(w[i%w.length],Math.random()+0.5);i++;},3000);
+}else alert("Only at 3 AM");
 }
 
-// SCAN
-function scan(){
-scanResult.innerHTML="Analyzing...";
-setTimeout(()=>scanResult.innerHTML="Threat Level: HIGH 🔥",2000);
-}
-
-// DESTRUCT
-function startDestruct(){
-let t=10;
-let i=setInterval(()=>{
-timer.innerHTML=--t;
-if(t==0){
-clearInterval(i);
-document.body.innerHTML="<h1 style='color:red'>SYSTEM DESTROYED 💀</h1>";
-}},1000);
+// ===== NAV =====
+function back(){
+main.style.display="block";
+more.style.display="none";
 }
 
 </script>
+
 </body>
 </html>
