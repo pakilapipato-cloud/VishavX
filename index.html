@@ -10,36 +10,36 @@ body{
   color:#00ff00;
   font-family:monospace;
   text-align:center;
+  overflow:hidden;
 }
 
-.glow{
-  font-size:32px;
-  margin-top:100px;
-  animation:glow 1.5s infinite alternate;
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-1;
 }
 
-@keyframes glow{
-  from{text-shadow:0 0 5px #00ff00;}
-  to{text-shadow:0 0 25px #00ff00;}
+.section{display:none;}
+
+.glitch{
+  font-size:30px;
+  margin-top:80px;
+  animation:glitch 0.5s infinite;
+}
+
+@keyframes glitch{
+  0%{text-shadow:2px 2px red;}
+  50%{text-shadow:-2px -2px lime;}
+  100%{text-shadow:2px -2px blue;}
 }
 
 .loader{
-  margin:40px auto;
-  border:3px solid #111;
-  border-top:3px solid #00ff00;
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-  100%{transform:rotate(360deg);}
+  margin-top:100px;
 }
 
 .box{
   display:none;
-  margin-top:30px;
 }
 
 input{
@@ -47,70 +47,216 @@ input{
   background:black;
   border:1px solid red;
   color:red;
-  text-align:center;
-  font-size:16px;
 }
 
 button{
-  padding:10px 15px;
+  padding:10px;
   background:red;
   color:black;
   border:none;
   margin-top:10px;
+}
+
+.menu{
+  position:fixed;
+  top:10px;
+  right:10px;
+  color:red;
   cursor:pointer;
 }
 
-.error{
-  color:red;
-  margin-top:10px;
-  font-size:14px;
-}
 </style>
-
 </head>
 
 <body>
 
-<div class="glow">WELCOME TO VISHAVX</div>
+<canvas id="matrix"></canvas>
 
-<div class="loader"></div>
+<div class="menu" onclick="show('more')">☰ MORE</div>
+
+<div id="intro">Initializing System...</div>
+
+<div id="loader" class="loader">🤖 Repairing system...</div>
+
+<div id="main" class="section">
+<div class="glitch">WELCOME TO VISHAVX</div>
 
 <div class="box" id="box">
-  <p style="color:red;">Enter 4 digit code</p>
+<p>Enter 5 digit key</p>
+<input id="key" maxlength="5">
+<br>
+<button onclick="checkKey()">Confirm</button>
+<div id="msg"></div>
+</div>
+</div>
 
-  <input id="key" maxlength="4" placeholder="####">
-  <br>
+<!-- MORE MENU -->
+<div id="more" class="section">
+<h2>Modes</h2>
+<button onclick="show('chatbot')">AI Chatbot</button>
+<button onclick="show('terminal')">Terminal</button>
+<button onclick="show('scan')">AI Scan</button>
+<button onclick="show('destruct')">Self Destruct</button>
+<button onclick="show('main')">Back</button>
+</div>
 
-  <button onclick="checkKey()">Confirm</button>
+<!-- CHATBOT -->
+<div id="chatbot" class="section">
+<h2>AI Chatbot</h2>
+<div id="chatBox" style="height:200px;overflow:auto;border:1px solid green;"></div>
+<input id="userInput">
+<button onclick="sendMsg()">Send</button>
+<br><br>
+<button onclick="show('more')">Back</button>
+</div>
 
-  <div id="msg" class="error"></div>
+<!-- TERMINAL -->
+<div id="terminal" class="section">
+<div id="output">Type login</div>
+<input id="cmd">
+<button onclick="runCmd()">Enter</button>
+<br><br>
+<button onclick="show('more')">Back</button>
+</div>
+
+<!-- SCAN -->
+<div id="scan" class="section">
+<input id="name">
+<button onclick="scan()">Scan</button>
+<div id="scanResult"></div>
+<br>
+<button onclick="show('more')">Back</button>
+</div>
+
+<!-- DESTRUCT -->
+<div id="destruct" class="section">
+<div id="timer">10</div>
+<button onclick="startDestruct()">Start</button>
+<br>
+<button onclick="show('more')">Back</button>
 </div>
 
 <script>
 
-// Loader hide + box show
-setTimeout(function(){
-  document.querySelector('.loader').style.display='none';
-  document.getElementById('box').style.display='block';
-},3000);
+// MATRIX
+let c=document.getElementById("matrix");
+let ctx=c.getContext("2d");
+c.height=window.innerHeight;
+c.width=window.innerWidth;
+let letters="01".split("");
+let font_size=14;
+let columns=c.width/font_size;
+let drops=[];
+for(let x=0;x<columns;x++) drops[x]=1;
+function draw(){
+ctx.fillStyle="rgba(0,0,0,0.05)";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.fillStyle="#0F0";
+ctx.font=font_size+"px monospace";
+for(let i=0;i<drops.length;i++){
+let text=letters[Math.floor(Math.random()*letters.length)];
+ctx.fillText(text,i*font_size,drops[i]*font_size);
+if(drops[i]*font_size>c.height) drops[i]=0;
+drops[i]++;
+}}
+setInterval(draw,33);
 
-// Check code
+// NAV
+function show(id){
+document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+document.getElementById(id).style.display='block';
+}
+
+// VOICE
+function speak(text){
+let speech=new SpeechSynthesisUtterance(text);
+speech.lang="en-US";
+speech.pitch=1.2;
+speech.rate=1;
+speechSynthesis.speak(speech);
+}
+
+// SOUND
+function beep(){
+let ctx=new(window.AudioContext||window.webkitAudioContext)();
+let osc=ctx.createOscillator();
+osc.frequency.value=300;
+osc.connect(ctx.destination);
+osc.start();
+setTimeout(()=>osc.stop(),150);
+}
+
+// FLOW
+setTimeout(()=>{document.getElementById("intro").style.display="none";},4000);
+setTimeout(()=>{
+document.getElementById("loader").style.display="none";
+show('main');
+document.getElementById("box").style.display="block";
+speak("Please enter 5 digit key");
+},7000);
+
+// LOGIN
+let attempts=5;
 function checkKey(){
-  var val = document.getElementById('key').value;
+let val=document.getElementById('key').value;
+let msg=document.getElementById('msg');
 
-  if(val.length !== 4){
-    document.getElementById('msg').innerHTML = "Enter 4 digit code!";
-  } 
-  else if(val === "1718"){   // 🔐 YAHAN APNA SECRET CODE DAL
-    document.getElementById('msg').innerHTML = "Access Granted ✅";
-    
-    setTimeout(function(){
-      window.location.href = "https://google.com"; // 🔗 REDIRECT LINK
-    },1000);
-  }
-  else {
-    document.getElementById('msg').innerHTML = "Your code is incorrect, try again...";
-  }
+if(val.length!==5){
+msg.innerHTML="Enter 5 digit code";
+speak("Please enter 5 digit code");
+return;
+}
+
+if(val==="siya0"){
+msg.innerHTML="Access Granted";
+speak("Access granted");
+setTimeout(()=>{
+window.location.href="https://monnie.neocities.org/";
+},1500);
+}else{
+attempts--;
+msg.innerHTML="Wrong code ("+attempts+" left)";
+speak("Wrong code entered");
+if(navigator.vibrate) navigator.vibrate(300);
+beep();
+}
+}
+
+// CHATBOT
+function sendMsg(){
+let input=document.getElementById('userInput');
+let chat=document.getElementById('chatBox');
+let msg=input.value;
+chat.innerHTML+="<p>You: "+msg+"</p>";
+chat.innerHTML+="<p>AI: Processing...</p>";
+input.value="";
+}
+
+// TERMINAL
+function runCmd(){
+let cmd=document.getElementById('cmd').value;
+let out=document.getElementById('output');
+out.innerHTML+="<br>"+cmd;
+}
+
+// SCAN
+function scan(){
+let name=document.getElementById('name').value;
+document.getElementById('scanResult').innerHTML="Analyzing "+name+"...";
+}
+
+// DESTRUCT
+function startDestruct(){
+let t=10;
+let timer=document.getElementById('timer');
+let i=setInterval(()=>{
+t--;
+timer.innerHTML=t;
+if(t==0){
+clearInterval(i);
+document.body.innerHTML="<h1 style='color:red'>SYSTEM DESTROYED</h1>";
+}
+},1000);
 }
 
 </script>
