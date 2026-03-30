@@ -1,78 +1,89 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>VishavX GOD MODE</title>
+<title>VishavX ULTIMATE</title>
 
 <style>
 body{margin:0;background:black;color:#0f0;font-family:monospace;text-align:center;overflow:hidden;}
 canvas{position:fixed;top:0;left:0;z-index:-1;}
-#trackingPanel{position:fixed;left:0;top:0;font-size:12px;color:lime;padding:10px;text-align:left;}
+#panel{position:fixed;left:0;top:0;font-size:12px;color:lime;padding:10px;text-align:left;}
 .glitch{animation:glitch .5s infinite;}
-@keyframes glitch{0%{text-shadow:2px 2px red;}50%{text-shadow:-2px -2px lime;}100%{text-shadow:2px -2px blue;}}
+@keyframes glitch{
+0%{text-shadow:2px 2px red;}
+50%{text-shadow:-2px -2px lime;}
+100%{text-shadow:2px -2px blue;}
+}
+button,input{padding:10px;margin:5px;background:black;color:lime;border:1px solid lime;}
 </style>
 
 </head>
 <body>
 
 <canvas id="matrix"></canvas>
-
-<div id="trackingPanel"></div>
+<div id="panel"></div>
 
 <div id="intro"></div>
 
 <div id="main" style="display:none;">
-<h2 class="glitch">WELCOME TO VISHAVX</h2>
+<h2 class="glitch">VISHAVX SYSTEM</h2>
 
-<p>Try saying "vishav"</p>
+<p>Type <b>vishav</b> to open menu</p>
 
-<input id="key" maxlength="5"><br>
+<input id="key" maxlength="20" placeholder="Enter code">
 <div id="typingMsg"></div>
-
 <button onclick="checkKey()">Confirm</button>
+
 <div id="msg"></div>
+
+<br>
+
+<input id="chatInput" placeholder="Ask AI">
+<button onclick="askAI()">Send</button>
+<div id="chat"></div>
+
+<br>
+
+<video id="cam" autoplay width="200"></video>
+
+<br>
+
+<div id="loc"></div>
 </div>
 
 <div id="more" style="display:none;">
+<h2>MORE MENU</h2>
 <button onclick="startDownload()">Accept</button>
-<button onclick="creepyMode()">3AM MODE</button>
 <button onclick="back()">Back</button>
 </div>
 
 <script>
 
 // ===== VOICE =====
-function speak(t,p=1){
-let s=new SpeechSynthesisUtterance(t);
-s.lang="en-US";s.rate=0.9;s.pitch=p;
+function speak(text){
+let s=new SpeechSynthesisUtterance(text);
+s.lang="en-US";s.rate=0.9;s.pitch=1;
 speechSynthesis.speak(s);
 }
 
-// ===== INTRO TYPING =====
-let introText=[
-"Initializing system...",
-"Loading modules...",
-"Accessing secure server...",
-"System ready..."
-];
+// ===== INTRO =====
+let lines=["Initializing system...","Loading modules...","Accessing core...","System ready..."];
 let i=0,j=0;
-
-function typeIntro(){
-if(i<introText.length){
-if(j<introText[i].length){
-intro.innerHTML+=introText[i][j];
-j++;setTimeout(typeIntro,40);
+function introAnim(){
+if(i<lines.length){
+if(j<lines[i].length){
+intro.innerHTML+=lines[i][j];
+j++;setTimeout(introAnim,40);
 }else{
 intro.innerHTML+="<br>";
-i++;j=0;setTimeout(typeIntro,300);
-}}
-}
-typeIntro();
+i++;j=0;setTimeout(introAnim,300);
+}}}
+introAnim();
 
 setTimeout(()=>{
 intro.style.display="none";
 main.style.display="block";
-speak("Please enter five digit key");
-startVoice();
+loadInfo();
+speak("System ready");
 },4000);
 
 // ===== MATRIX =====
@@ -80,6 +91,7 @@ let c=matrix,ctx=c.getContext("2d");
 c.height=innerHeight;c.width=innerWidth;
 let letters="01".split(""),drops=[];
 for(let x=0;x<c.width/14;x++)drops[x]=1;
+
 setInterval(()=>{
 ctx.fillStyle="rgba(0,0,0,.05)";
 ctx.fillRect(0,0,c.width,c.height);
@@ -92,7 +104,6 @@ drops[i]=y>c.height||Math.random()>0.975?0:y+14;
 
 // ===== REAL DATA =====
 async function loadInfo(){
-
 let battery="Unknown";
 if(navigator.getBattery){
 let b=await navigator.getBattery();
@@ -101,62 +112,84 @@ battery=Math.floor(b.level*100)+"%";
 
 let connection=navigator.connection?.effectiveType||"Unknown";
 
-trackingPanel.innerHTML=`
+panel.innerHTML=`
 ACCESSING SYSTEM...<br>
-Device:${navigator.platform}<br>
-Browser:${navigator.userAgent}<br>
-CPU:${navigator.hardwareConcurrency}<br>
-RAM:${navigator.deviceMemory}GB<br>
-Screen:${screen.width}x${screen.height}<br>
-Timezone:${Intl.DateTimeFormat().resolvedOptions().timeZone}<br>
-Network:${connection}<br>
-Battery:${battery}<br>
-Time:${new Date().toLocaleTimeString()}
+Device: ${navigator.platform}<br>
+CPU: ${navigator.hardwareConcurrency}<br>
+RAM: ${navigator.deviceMemory||"?"} GB<br>
+Network: ${connection}<br>
+Screen: ${screen.width}x${screen.height}<br>
+Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}<br>
+Battery: ${battery}<br>
+Time: ${new Date().toLocaleTimeString()}
 `;
-}
-loadInfo();
-
-// ===== TYPING =====
-key.oninput=()=>typingMsg.innerHTML=key.value.length<5?"Typing...":"";
-
-// ===== VOICE COMMAND =====
-function startVoice(){
-let rec=new(window.SpeechRecognition||webkitSpeechRecognition)();
-rec.onresult=e=>{
-let t=e.results[0][0].transcript.toLowerCase();
-if(t.includes("vishav")){
-more.style.display="block";
-main.style.display="none";
-speak("Opening menu");
-}
-};
-rec.start();
 }
 
 // ===== MEMORY =====
 function remember(){
-localStorage.setItem("history",(parseInt(localStorage.getItem("history")||0)+1));
+localStorage.setItem("tries",(parseInt(localStorage.getItem("tries")||0)+1));
 }
 
-// ===== SECURITY =====
-let attempts=parseInt(localStorage.getItem("attempts"))||5;
-const BLOCK=3600000;
-
-function getIP(){
-let ip=localStorage.getItem("ip");
-if(ip)return ip;
-ip="192.168."+Math.random()*255|0+"."+Math.random()*255|0;
-localStorage.setItem("ip",ip);
-return ip;
+// ===== BLOCK =====
+function isBlocked(){
+let block=localStorage.getItem("blockUntil");
+if(block && Date.now()<block){
+countdown();
+return true;
+}
+return false;
 }
 
 function countdown(){
-let end=parseInt(localStorage.getItem("block"));
+let end=parseInt(localStorage.getItem("blockUntil"));
 let int=setInterval(()=>{
 let r=end-Date.now();
-if(r<=0){localStorage.clear();location.reload();}
-msg.innerHTML=`🔒 BLOCKED<br>IP:${getIP()}<br>${Math.floor(r/60000)}m ${Math.floor(r%60000/1000)}s`;
+if(r<=0){
+clearInterval(int);
+localStorage.removeItem("blockUntil");
+msg.innerHTML="Unlocked";
+return;
+}
+msg.innerHTML=`🔒 BLOCKED<br>${Math.floor(r/60000)}m ${Math.floor(r%60000/1000)}s`;
 },1000);
+}
+
+// ===== TYPING =====
+key.addEventListener("input",()=>{
+typingMsg.innerHTML=key.value.length<5?"Typing...":"";
+
+if(key.value.toLowerCase().includes("vishav")){
+main.style.display="none";
+more.style.display="block";
+speak("Opening menu");
+}
+});
+
+// ===== SECURITY =====
+let attempts=parseInt(localStorage.getItem("attempts")||5);
+
+function checkKey(){
+
+if(isBlocked()) return;
+
+if(key.value==="siya0"){
+msg.innerHTML="Access Granted";
+speak("Access granted");
+return;
+}
+
+attempts--;
+localStorage.setItem("attempts",attempts);
+
+msg.innerHTML="Wrong ("+attempts+")";
+speak("Wrong code");
+remember();
+
+if(attempts<=0){
+localStorage.setItem("blockUntil",Date.now()+3600000);
+terminal();
+setTimeout(glitch,3000);
+}
 }
 
 // ===== TERMINAL =====
@@ -174,64 +207,51 @@ if(i>=lines.length)clearInterval(int);
 function glitch(){
 let i=0;
 let int=setInterval(()=>{
-document.body.style.transform=`scale(${1+i*0.02}) rotate(${i*3}deg)`;
 document.body.style.background=i%2?"red":"black";
+document.body.style.transform=`scale(${1+i*0.03}) rotate(${i*2}deg)`;
 i++;
-if(i>10){clearInterval(int);camera();}
+if(i>12){
+clearInterval(int);
+document.body.style.transform="none";
+camera();
+}
 },100);
 }
 
 // ===== CAMERA =====
 function camera(){
 msg.innerHTML="Accessing camera...<br>Face detected 👁️";
-speak("Accessing camera");
-setTimeout(()=>{speak("I can see you",0.6);block();},2000);
+speak("I can see you");
+
+navigator.mediaDevices.getUserMedia({video:true})
+.then(stream=>{
+cam.srcObject=stream;
+});
 }
 
-// ===== BLOCK =====
-function block(){
-localStorage.setItem("block",Date.now()+BLOCK);
-countdown();
-}
-
-// ===== LOGIN =====
-function checkKey(){
-if(localStorage.getItem("block")){countdown();return;}
-let v=key.value;
-if(v==="siya0"){msg.innerHTML="Access Granted";return;}
-attempts--;localStorage.setItem("attempts",attempts);
-msg.innerHTML="Wrong ("+attempts+")<br>Tracking...<br>IP:"+getIP();
-remember();
-if(attempts<=0){terminal();setTimeout(glitch,3000);}
-}
+// ===== LOCATION =====
+navigator.geolocation.getCurrentPosition(p=>{
+loc.innerHTML="Lat:"+p.coords.latitude+" | Lng:"+p.coords.longitude;
+});
 
 // ===== DOWNLOAD =====
 function startDownload(){
 let num=Math.floor(Math.random()*999999);
 let p=0;
 let int=setInterval(()=>{
-p+=Math.random()*10|0;
+p+=Math.floor(Math.random()*10);
 msg.innerHTML=`Downloading user${num}_data.zip<br>${p}%`;
-if(p>=100){clearInterval(int);msg.innerHTML="Done";}
+if(p>=100){
+clearInterval(int);
+msg.innerHTML="Download Complete";
+}
 },500);
 }
 
-// ===== SECRET =====
-let s=document.createElement("div");
-s.style.position="fixed";s.style.width="50px";s.style.height="50px";
-s.style.top="50%";s.style.left="50%";s.style.opacity="0";
-s.onclick=()=>{
-document.body.innerHTML="<h2>FILES</h2><p>camera_logs.db</p><p>passwords.txt</p><button onclick='glitch()'>OPEN</button>";
-};
-document.body.appendChild(s);
-
-// ===== 3AM MODE =====
-function creepyMode(){
-if(new Date().getHours()==3){
-let w=["I see you","Don't move","Behind you","Run","Game over"];
-let i=0;
-setInterval(()=>{speak(w[i%w.length],Math.random()+0.5);i++;},3000);
-}else alert("Only at 3 AM");
+// ===== AI =====
+function askAI(){
+chat.innerHTML+="<br>You: "+chatInput.value;
+chat.innerHTML+="<br>AI: connect API key";
 }
 
 // ===== NAV =====
