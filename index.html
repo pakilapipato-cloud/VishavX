@@ -1,297 +1,224 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>VishavOS Final</title>
+<title>VishavX ULTIMATE</title>
 
 <style>
-body{
-margin:0;
-background:#111;
-font-family:monospace;
-overflow:hidden;
-color:white;
+body{margin:0;background:black;color:#0f0;font-family:monospace;text-align:center;overflow:hidden;}
+canvas{position:fixed;top:0;left:0;z-index:-1;}
+#panel{position:fixed;left:0;top:0;font-size:12px;color:red;padding:10px;text-align:left;}
+#username{position:fixed;right:10px;top:10px;color:lime;}
+.glitch{animation:glitch .2s infinite;}
+@keyframes glitch{
+0%{transform:translate(2px,2px);}
+50%{transform:translate(-2px,-2px);}
+100%{transform:translate(2px,-2px);}
 }
-
-/* DESKTOP */
-#desktop{
-width:100vw;
-height:100vh;
-position:relative;
-background:linear-gradient(#00c6ff,#7b00ff);
-}
-
-/* WALL TEXT */
-#wall{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-font-size:60px;
-opacity:0.1;
-}
-
-/* ICON GRID */
-#icons{
-display:grid;
-grid-template-columns:repeat(auto-fill,80px);
-gap:20px;
-padding:20px;
-height:calc(100vh - 40px);
-overflow:auto;
-}
-
-.icon{
-text-align:center;
-cursor:pointer;
-}
-
-/* TASKBAR */
-#taskbar{
-position:absolute;
-bottom:0;
-width:100%;
-height:40px;
-background:black;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:0 10px;
-color:lime;
-}
-
-/* WINDOW */
-.window{
-position:absolute;
-width:320px;
-background:black;
-border:1px solid lime;
-top:100px;
-left:100px;
-z-index:10;
-}
-
-.title{
-background:lime;
-color:black;
-padding:5px;
-cursor:move;
-}
-
-.close{
-float:right;
-cursor:pointer;
-}
-
-.content{
-padding:10px;
-}
-
-/* NOTIFY */
-.notify{
-position:fixed;
-top:10px;
-right:10px;
-background:black;
-color:lime;
-padding:10px;
-border:1px solid lime;
-}
+button,input{padding:10px;margin:5px;background:black;color:lime;border:1px solid lime;}
 </style>
 
 </head>
 <body>
 
-<div id="desktop">
+<canvas id="matrix"></canvas>
+<div id="panel"></div>
+<div id="username"></div>
 
-<div id="wall">vishav_hub</div>
+<div id="intro"></div>
 
-<div id="icons">
-<div class="icon" onclick="openApp('terminal')">💻<br>Terminal</div>
-<div class="icon" onclick="openApp('browser')">🌐<br>Browser</div>
-<div class="icon" onclick="openApp('music')">🎵<br>Music</div>
-<div class="icon" onclick="openApp('game')">🎮<br>Game</div>
-<div class="icon" onclick="openApp('notes')">📝<br>Notes</div>
-<div class="icon" onclick="openApp('virus')">☠️<br>Virus</div>
+<div id="main" style="display:none;">
+<h2 class="glitch">VISHAVX SYSTEM</h2>
+
+<input id="key" placeholder="Enter code">
+<button onclick="checkKey()">Confirm</button>
+
+<div id="msg"></div>
 </div>
 
-<div id="taskbar">
-<div>VishavOS</div>
-<div id="time"></div>
-</div>
+<div id="more" style="display:none;">
+<h2>MORE MENU</h2>
 
+<input id="chatInput">
+<button onclick="askAI()">Send</button>
+<div id="chat"></div>
+
+<button onclick="startDownload()">Accept</button>
+<div id="moreMsg"></div>
+
+<button onclick="back()">Back</button>
 </div>
 
 <script>
 
-let z = 1;
+// ===== USER =====
+let name = localStorage.getItem("name");
+if(!name){
+name = prompt("Enter your name");
+localStorage.setItem("name",name);
+}
+username.innerHTML="user_"+name;
 
-// CLOCK
+// ===== INTRO =====
+let text=["Initializing system...","Loading modules...","Access granted..."];
+let i=0,j=0;
+
+function introAnim(){
+if(i<text.length){
+if(j<text[i].length){
+intro.innerHTML+=text[i][j];
+j++;setTimeout(introAnim,40);
+}else{
+intro.innerHTML+="<br>";i++;j=0;setTimeout(introAnim,300);
+}}}
+introAnim();
+
+setTimeout(()=>{
+intro.style.display="none";
+main.style.display="block";
+loadInfo();
+},3000);
+
+// ===== MATRIX =====
+let c=matrix,ctx=c.getContext("2d");
+c.height=innerHeight;c.width=innerWidth;
+let letters="01".split(""),drops=[];
+for(let x=0;x<c.width/14;x++)drops[x]=1;
+
 setInterval(()=>{
-document.getElementById("time").innerText =
-new Date().toLocaleTimeString();
-},1000);
+ctx.fillStyle="rgba(0,0,0,.05)";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.fillStyle="#0F0";
+drops.forEach((y,i)=>{
+ctx.fillText(letters[Math.random()*2|0],i*14,y);
+drops[i]=y>c.height||Math.random()>0.975?0:y+14;
+});
+},33);
 
-// NOTIFY
-function notify(msg){
-let n=document.createElement("div");
-n.className="notify";
-n.innerText=msg;
-document.body.appendChild(n);
+// ===== DEVICE INFO =====
+function loadInfo(){
+let device = navigator.userAgent.includes("Android") ? "Android" : "iOS";
 
-setTimeout(()=>n.remove(),3000);
-}
-
-// OPEN APP
-function openApp(name){
-
-let win=document.createElement("div");
-win.className="window";
-win.style.zIndex=++z;
-
-let content="";
-
-// APPS
-if(name==="terminal"){
-content=`
-<div id="term"></div>
-<input id="cmd" placeholder="type command">
+panel.innerHTML=`
+ACCESSING SYSTEM...<br>
+Device: ${device}<br>
+Internet: High Speed Internet<br>
+Time: ${new Date().toLocaleTimeString()}
 `;
 }
 
-if(name==="browser"){
-content=`
-<input id="url" placeholder="google / youtube">
-<button onclick="loadSite(this)">Go</button>
-<div class="web"></div>
-`;
-}
+// ===== SECURITY =====
+let attempts=5;
+let blocked=false;
 
-if(name==="music"){
-content=`
-<audio controls autoplay>
-<source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
-</audio>
-`;
-}
+// ===== CHECK =====
+function checkKey(){
 
-if(name==="game"){
-content=`
-<div id="score">Score: 0</div>
-<button onclick="addScore()">Click</button>
-`;
+if(blocked) return;
+
+msg.innerHTML="Synchronizing...";
+
 setTimeout(()=>{
-window.score=0;
-window.addScore=function(){
-score++;
-document.getElementById("score").innerText="Score: "+score;
-};
-},100);
-}
 
-if(name==="notes"){
-content=`
-<textarea id="note" style="width:100%;height:100px;"></textarea>
-<button onclick="saveNote()">Save</button>
-`;
-setTimeout(()=>{
-let data=localStorage.getItem("note");
-if(data) document.getElementById("note").value=data;
-
-window.saveNote=function(){
-localStorage.setItem("note",document.getElementById("note").value);
-notify("Saved");
-};
-},100);
-}
-
-if(name==="virus"){
-notify("System infected...");
-for(let i=0;i<3;i++){
-setTimeout(()=>openApp("error"),i*300);
-}
+if(key.value==="siya0"){
+main.style.display="none";
+more.style.display="block";
 return;
 }
 
-if(name==="error"){
-content="⚠ ERROR DETECTED";
+// WRONG
+attempts--;
+msg.innerHTML="Wrong ("+attempts+")";
+
+if(attempts<=0){
+startBlock();
 }
 
-// UI
-win.innerHTML=`
-<div class="title">
-${name.toUpperCase()}
-<span class="close">X</span>
-</div>
-<div class="content">${content}</div>
-`;
-
-document.getElementById("desktop").appendChild(win);
-
-// CLOSE
-win.querySelector(".close").onclick=()=>{
-win.remove();
-};
-
-// DRAG
-let title=win.querySelector(".title");
-
-title.onmousedown=function(e){
-let shiftX=e.clientX-win.offsetLeft;
-let shiftY=e.clientY-win.offsetTop;
-
-function move(e){
-win.style.left=e.pageX-shiftX+"px";
-win.style.top=e.pageY-shiftY+"px";
+},1500);
 }
 
-document.addEventListener("mousemove",move);
+// ===== BLOCK =====
+function startBlock(){
+blocked=true;
 
-document.onmouseup=function(){
-document.removeEventListener("mousemove",move);
-document.onmouseup=null;
-};
-};
+let time=30;
 
-// TERMINAL FIX
-if(name==="terminal"){
-setTimeout(()=>{
-let input=win.querySelector("#cmd");
-let out=win.querySelector("#term");
+let timer=setInterval(()=>{
+msg.innerHTML=`🔒 BLOCKED ${time}s`;
+time--;
 
-input.onkeydown=function(e){
-if(e.key==="Enter"){
-let cmd=input.value;
-out.innerHTML+=`<br>> ${cmd}`;
-
-if(cmd==="help"){
-out.innerHTML+="<br>commands: help clear";
+if(time<=0){
+clearInterval(timer);
+blocked=false;
+attempts=5;
+msg.innerHTML="Retry";
 }
-else if(cmd==="clear"){
-out.innerHTML="";
-}
+},1000);
 
-input.value="";
+// GLITCH + SHAKE
+let g=0;
+let glitch=setInterval(()=>{
+document.body.style.background=g%2?"pink":"black";
+document.body.style.transform=`rotate(${g*3}deg)`;
+g++;
+
+if(g>12){
+clearInterval(glitch);
+document.body.style.transform="none";
+cameraPhase();
 }
-};
 },100);
 }
 
+// ===== CAMERA =====
+function cameraPhase(){
+msg.innerHTML="Initializing camera...<br>Face detected";
+
+navigator.mediaDevices.getUserMedia({video:true})
+.then(stream=>{
+cam.srcObject=stream;
+});
+
+setTimeout(()=>{
+let s=new SpeechSynthesisUtterance("I can see you");
+s.rate=0.8;
+speechSynthesis.speak(s);
+},1000);
 }
 
-// BROWSER FIX
-function loadSite(btn){
-let val=btn.previousElementSibling.value;
-let web=btn.nextElementSibling;
+// ===== TEXT TRIGGER =====
+key.addEventListener("input",()=>{
+if(key.value.toLowerCase().includes("vishav")){
+main.style.display="none";
+more.style.display="block";
+}
+});
 
-if(val==="google"){
-web.innerHTML="Fake Google Loaded";
+// ===== DOWNLOAD =====
+function startDownload(){
+let num=Math.floor(Math.random()*999999);
+let p=0;
+
+let int=setInterval(()=>{
+p+=Math.floor(Math.random()*10);
+moreMsg.innerHTML=`Downloading user${num}_data.zip<br>${p}%`;
+
+if(p>=100){
+clearInterval(int);
+moreMsg.innerHTML="Completed";
 }
-else if(val==="youtube"){
-web.innerHTML="Fake YouTube Loaded";
+},500);
 }
-else{
-web.innerHTML="Not found";
+
+// ===== AI =====
+function askAI(){
+chat.innerHTML+="<br>You: "+chatInput.value;
+chat.innerHTML+="<br>AI: Ready";
 }
+
+// ===== NAV =====
+function back(){
+main.style.display="block";
+more.style.display="none";
 }
 
 </script>
