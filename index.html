@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>VishavX ULTIMATE</title>
+<title>VishavX GOD MODE</title>
 
 <style>
 body{margin:0;background:black;color:#00ff00;font-family:monospace;text-align:center;overflow:hidden;}
@@ -14,7 +14,6 @@ button{padding:10px;background:red;color:black;border:none;margin:5px;}
 .menu{position:fixed;top:10px;right:10px;color:red;cursor:pointer;}
 #typingMsg{color:gray;}
 </style>
-
 </head>
 
 <body>
@@ -61,13 +60,12 @@ drops[i]=y>c.height||Math.random()>0.975?0:y+14;});},33);
 function speak(text){
 let s=new SpeechSynthesisUtterance(text);
 s.lang="en-US";s.rate=0.95;s.pitch=1;
-let voices=speechSynthesis.getVoices();
-let v=voices.find(v=>v.name.includes("Google")||v.name.includes("Female"));
+let v=speechSynthesis.getVoices().find(v=>v.name.includes("Google")||v.name.includes("Female"));
 if(v) s.voice=v;
 speechSynthesis.speak(s);
 }
 
-// ===== INTRO TYPING =====
+// ===== INTRO =====
 let lines=["Initializing system...","Loading modules...","Accessing server...","System ready..."];
 let i=0,j=0;
 function typeEffect(){
@@ -79,9 +77,8 @@ j++;setTimeout(typeEffect,40);
 }}
 typeEffect();
 
-// ===== FLOW =====
 setTimeout(()=>intro.style.display="none",4000);
-setTimeout(()=>{show('main');speak("Please enter five digit key");loadName();startVoice();},6000);
+setTimeout(()=>{show('main');speak("Please enter five digit key");loadMemory();startVoice();},6000);
 
 // ===== NAV =====
 function show(id){
@@ -90,9 +87,7 @@ document.getElementById(id).style.display='block';
 }
 
 // ===== TYPING =====
-key.addEventListener("input",()=>{
-typingMsg.innerHTML=key.value.length<5?"Typing...":"";
-});
+key.addEventListener("input",()=>typingMsg.innerHTML=key.value.length<5?"Typing...":"");
 
 // ===== VOICE COMMAND =====
 function startVoice(){
@@ -106,10 +101,11 @@ rec.start();
 }
 
 // ===== MEMORY =====
-function loadName(){
-let n=localStorage.getItem("user");
-if(n) speak("Welcome back "+n);
+function loadMemory(){
+let h=localStorage.getItem("history");
+if(h) speak("You tried "+h+" times before");
 }
+function remember(){localStorage.setItem("history",(+localStorage.getItem("history")||0)+1);}
 
 // ===== SECURITY =====
 const MAX=5,BLOCK=3600000;
@@ -152,12 +148,20 @@ msg.innerHTML="Wrong ("+attempts+")";
 speak("Wrong code");
 navigator.vibrate?.(300);
 
+remember();
+fakeTracking();
+
 if(attempts<=0){
 localStorage.setItem("block",Date.now()+BLOCK);
 msg.innerHTML="🔒 BLOCKED";
 speak("System locked");
 countdown();
 }}
+}
+
+// ===== TRACKING =====
+function fakeTracking(){
+msg.innerHTML+="<br>Tracking...<br>IP:"+getIP()+"<br>Camera access 👁️";
 }
 
 // ===== DOWNLOAD =====
@@ -173,16 +177,46 @@ else msg.innerHTML="Downloading: user"+num+"_data.zip<br>"+p+"%";
 
 // ===== TIME MODE =====
 function timeMode(){
-let h=new Date().getHours();
-if(h===3){
+if(new Date().getHours()==3){
 document.body.innerHTML="<h1 style='color:red'>YOU ARE NOT ALONE 👁️</h1>";
 speak("You are not alone");
-setInterval(()=>document.body.style.background=
-document.body.style.background=="black"?"red":"black",500);
-}else alert("Only available at 3 AM");
+setInterval(()=>document.body.style.background=document.body.style.background=="black"?"red":"black",500);
+}else alert("Only at 3 AM");
+}
+
+// ===== SECRET =====
+let s=document.createElement("div");
+s.style.position="fixed";s.style.width="50px";s.style.height="50px";
+s.style.top="50%";s.style.left="50%";s.style.opacity="0";
+s.onclick=showFiles;
+document.body.appendChild(s);
+
+// ===== FILE SYSTEM =====
+function showFiles(){
+document.body.innerHTML="<h2>System Files</h2><p>documents.exe</p><p>camera_logs.db</p><button onclick='glitch()'>Open</button>";
+}
+
+// ===== GLITCH =====
+function glitch(){
+let txt=["ACCESSING","BREACH","OVERRIDE"];
+let i=0;
+let int=setInterval(()=>{
+document.body.style.background=i%2?"red":"black";
+document.body.innerHTML="<h1>"+txt[i%3]+"</h1>";
+i++;
+if(i>8){clearInterval(int);trap();}
+},300);
+}
+
+// ===== FINAL TRAP =====
+function trap(){
+document.body.innerHTML="<h1 style='color:red'>ACCESS DENIED</h1>";
+setTimeout(()=>{
+document.body.innerHTML="<h2 style='color:red'>access camera.exe</h2><p>Downloading photos.dfiles...</p>";
+speak("I can see you");
+},2000);
 }
 
 </script>
-
 </body>
 </html>
