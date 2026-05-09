@@ -1,246 +1,234 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>VishavX GOD MODE</title>
-
-<style>
-body{margin:0;background:black;color:#0f0;font-family:monospace;text-align:center;overflow:hidden;}
-canvas{position:fixed;top:0;left:0;z-index:-1;}
-#trackingPanel{position:fixed;left:0;top:0;font-size:12px;color:lime;padding:10px;text-align:left;}
-.glitch{animation:glitch .5s infinite;}
-@keyframes glitch{0%{text-shadow:2px 2px red;}50%{text-shadow:-2px -2px lime;}100%{text-shadow:2px -2px blue;}}
-</style>
-
-</head>
-<body>
-
-<canvas id="matrix"></canvas>
-
-<div id="trackingPanel"></div>
-
-<div id="intro"></div>
-
-<div id="main" style="display:none;">
-<h2 class="glitch">WELCOME TO VISHAVX</h2>
-
-<p>Try saying "vishav"</p>
-
-<input id="key" maxlength="5"><br>
-<div id="typingMsg"></div>
-
-<button onclick="checkKey()">Confirm</button>
-<div id="msg"></div>
-</div>
-
-<div id="more" style="display:none;">
-<button onclick="startDownload()">Accept</button>
-<button onclick="creepyMode()">3AM MODE</button>
-<button onclick="back()">Back</button>
-</div>
-
 <script>
 
 // ===== VOICE =====
-function speak(t,p=1){
-let s=new SpeechSynthesisUtterance(t);
-s.lang="en-US";s.rate=0.9;s.pitch=p;
-speechSynthesis.speak(s);
+function speak(text,p=1){
+  let s=new SpeechSynthesisUtterance(text);
+  s.lang="en-US";s.rate=0.9;s.pitch=p;
+  speechSynthesis.speak(s);
 }
 
-// ===== INTRO TYPING =====
-let introText=[
-"Initializing system...",
-"Loading modules...",
-"Accessing secure server...",
-"System ready..."
-];
-let i=0,j=0;
+// ===== REAL DEVICE INFO =====
+async function loadRealInfo(){
 
-function typeIntro(){
-if(i<introText.length){
-if(j<introText[i].length){
-intro.innerHTML+=introText[i][j];
-j++;setTimeout(typeIntro,40);
-}else{
-intro.innerHTML+="<br>";
-i++;j=0;setTimeout(typeIntro,300);
-}}
-}
-typeIntro();
+  let battery="Unknown";
+  if(navigator.getBattery){
+    let b=await navigator.getBattery();
+    battery=Math.floor(b.level*100)+"%";
+  }
 
-setTimeout(()=>{
-intro.style.display="none";
-main.style.display="block";
-speak("Please enter five digit key");
-startVoice();
-},4000);
+  let connection=navigator.connection?.effectiveType||"Unknown";
 
-// ===== MATRIX =====
-let c=matrix,ctx=c.getContext("2d");
-c.height=innerHeight;c.width=innerWidth;
-let letters="01".split(""),drops=[];
-for(let x=0;x<c.width/14;x++)drops[x]=1;
-setInterval(()=>{
-ctx.fillStyle="rgba(0,0,0,.05)";
-ctx.fillRect(0,0,c.width,c.height);
-ctx.fillStyle="#0F0";
-drops.forEach((y,i)=>{
-ctx.fillText(letters[Math.random()*2|0],i*14,y);
-drops[i]=y>c.height||Math.random()>0.975?0:y+14;
-});
-},33);
+  // GPU
+  let gpu="Unknown";
+  try{
+    let canvas=document.createElement("canvas");
+    let gl=canvas.getContext("webgl");
+    let debug=gl.getExtension("WEBGL_debug_renderer_info");
+    gpu=gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
+  }catch(e){}
 
-// ===== REAL DATA =====
-async function loadInfo(){
+  let info=`
+  ACCESSING SYSTEM...<br>
+  Device: ${navigator.platform}<br>
+  Browser: ${navigator.userAgent}<br>
+  Language: ${navigator.language}<br>
+  Screen: ${screen.width}x${screen.height}<br>
+  CPU: ${navigator.hardwareConcurrency || "Unknown"} cores<br>
+  RAM: ${navigator.deviceMemory || "Unknown"} GB<br>
+  GPU: ${gpu}<br>
+  Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}<br>
+  Connection: ${connection}<br>
+  Online: ${navigator.onLine}<br>
+  Cookies: ${navigator.cookieEnabled}<br>
+  Audio: ${typeof Audio !== "undefined"}<br>
+  Battery: ${battery}<br>
+  Time: ${new Date().toLocaleTimeString()}
+  `;
 
-let battery="Unknown";
-if(navigator.getBattery){
-let b=await navigator.getBattery();
-battery=Math.floor(b.level*100)+"%";
+  document.getElementById("trackingPanel").innerHTML=info;
 }
 
-let connection=navigator.connection?.effectiveType||"Unknown";
-
-trackingPanel.innerHTML=`
-ACCESSING SYSTEM...<br>
-Device:${navigator.platform}<br>
-Browser:${navigator.userAgent}<br>
-CPU:${navigator.hardwareConcurrency}<br>
-RAM:${navigator.deviceMemory}GB<br>
-Screen:${screen.width}x${screen.height}<br>
-Timezone:${Intl.DateTimeFormat().resolvedOptions().timeZone}<br>
-Network:${connection}<br>
-Battery:${battery}<br>
-Time:${new Date().toLocaleTimeString()}
-`;
-}
-loadInfo();
-
-// ===== TYPING =====
-key.oninput=()=>typingMsg.innerHTML=key.value.length<5?"Typing...":"";
-
-// ===== VOICE COMMAND =====
-function startVoice(){
-let rec=new(window.SpeechRecognition||webkitSpeechRecognition)();
-rec.onresult=e=>{
-let t=e.results[0][0].transcript.toLowerCase();
-if(t.includes("vishav")){
-more.style.display="block";
-main.style.display="none";
-speak("Opening menu");
-}
-};
-rec.start();
-}
+loadRealInfo();
 
 // ===== MEMORY =====
-function remember(){
-localStorage.setItem("history",(parseInt(localStorage.getItem("history")||0)+1));
+function memory(){
+  let h=localStorage.getItem("history");
+  if(h) speak("You tried "+h+" times before");
 }
+function remember(){
+  localStorage.setItem("history",(parseInt(localStorage.getItem("history")||0)+1));
+}
+memory();
 
 // ===== SECURITY =====
-let attempts=parseInt(localStorage.getItem("attempts"))||5;
-const BLOCK=3600000;
+const MAX=5,BLOCK_TIME=3600000;
+let attempts=parseInt(localStorage.getItem("attempts"))||MAX;
 
+// ===== FAKE IP =====
 function getIP(){
-let ip=localStorage.getItem("ip");
-if(ip)return ip;
-ip="192.168."+Math.random()*255|0+"."+Math.random()*255|0;
-localStorage.setItem("ip",ip);
-return ip;
+  let ip=localStorage.getItem("ip");
+  if(ip)return ip;
+  ip="192.168."+Math.random()*255|0+"."+Math.random()*255|0;
+  localStorage.setItem("ip",ip);
+  return ip;
 }
 
+// ===== COUNTDOWN =====
 function countdown(){
-let end=parseInt(localStorage.getItem("block"));
-let int=setInterval(()=>{
-let r=end-Date.now();
-if(r<=0){localStorage.clear();location.reload();}
-msg.innerHTML=`🔒 BLOCKED<br>IP:${getIP()}<br>${Math.floor(r/60000)}m ${Math.floor(r%60000/1000)}s`;
-},1000);
+  let end=parseInt(localStorage.getItem("block"));
+  let msg=document.getElementById("msg");
+
+  let int=setInterval(()=>{
+    let r=end-Date.now();
+    if(r<=0){
+      clearInterval(int);
+      localStorage.clear();
+      location.reload();
+    }
+    let m=Math.floor(r/60000);
+    let s=Math.floor((r%60000)/1000);
+
+    msg.innerHTML=`
+    🔒 IP BLOCKED<br>
+    IP: ${getIP()}<br>
+    Time left: ${m}m ${s}s
+    `;
+  },1000);
 }
 
 // ===== TERMINAL =====
-function terminal(){
-let lines=["> accessing..."," > decrypting..."," > downloading..."];
-let i=0;
-let int=setInterval(()=>{
-msg.innerHTML+="<br>"+lines[i];
-i++;
-if(i>=lines.length)clearInterval(int);
-},800);
+function autoTerminal(){
+  let lines=[
+    "> accessing system...",
+    "> decrypting files...",
+    "> downloading user data...",
+    "> breach detected..."
+  ];
+  let msg=document.getElementById("msg");
+  let i=0;
+
+  let int=setInterval(()=>{
+    msg.innerHTML+="<br>"+lines[i];
+    i++;
+    if(i>=lines.length)clearInterval(int);
+  },800);
 }
 
 // ===== GLITCH =====
-function glitch(){
-let i=0;
-let int=setInterval(()=>{
-document.body.style.transform=`scale(${1+i*0.02}) rotate(${i*3}deg)`;
-document.body.style.background=i%2?"red":"black";
-i++;
-if(i>10){clearInterval(int);camera();}
-},100);
+function glitchAttack(){
+  let i=0;
+  let int=setInterval(()=>{
+    document.body.style.transform=`scale(${1+i*0.02}) rotate(${i*3}deg)`;
+    document.body.style.background=i%2?"red":"black";
+    i++;
+    if(i>10){
+      clearInterval(int);
+      document.body.style.transform="none";
+      cameraPhase();
+    }
+  },100);
 }
 
 // ===== CAMERA =====
-function camera(){
-msg.innerHTML="Accessing camera...<br>Face detected 👁️";
-speak("Accessing camera");
-setTimeout(()=>{speak("I can see you",0.6);block();},2000);
+function cameraPhase(){
+  let msg=document.getElementById("msg");
+
+  msg.innerHTML=`
+  Accessing camera...<br>
+  Face detected 👁️
+  `;
+
+  speak("Accessing camera");
+
+  setTimeout(()=>{
+    speak("I can see you",0.6);
+    finalBlock();
+  },2000);
 }
 
-// ===== BLOCK =====
-function block(){
-localStorage.setItem("block",Date.now()+BLOCK);
-countdown();
+// ===== FINAL BLOCK =====
+function finalBlock(){
+  document.body.style.background="black";
+  localStorage.setItem("block",Date.now()+BLOCK_TIME);
+  countdown();
 }
 
 // ===== LOGIN =====
 function checkKey(){
-if(localStorage.getItem("block")){countdown();return;}
-let v=key.value;
-if(v==="siya0"){msg.innerHTML="Access Granted";return;}
-attempts--;localStorage.setItem("attempts",attempts);
-msg.innerHTML="Wrong ("+attempts+")<br>Tracking...<br>IP:"+getIP();
-remember();
-if(attempts<=0){terminal();setTimeout(glitch,3000);}
-}
 
-// ===== DOWNLOAD =====
-function startDownload(){
-let num=Math.floor(Math.random()*999999);
-let p=0;
-let int=setInterval(()=>{
-p+=Math.random()*10|0;
-msg.innerHTML=`Downloading user${num}_data.zip<br>${p}%`;
-if(p>=100){clearInterval(int);msg.innerHTML="Done";}
-},500);
-}
+  let msg=document.getElementById("msg");
 
-// ===== SECRET =====
-let s=document.createElement("div");
-s.style.position="fixed";s.style.width="50px";s.style.height="50px";
-s.style.top="50%";s.style.left="50%";s.style.opacity="0";
-s.onclick=()=>{
-document.body.innerHTML="<h2>FILES</h2><p>camera_logs.db</p><p>passwords.txt</p><button onclick='glitch()'>OPEN</button>";
-};
-document.body.appendChild(s);
+  if(localStorage.getItem("block")){
+    countdown();
+    return;
+  }
+
+  let val=document.getElementById("key").value;
+
+  if(val.length!==5){
+    msg.innerHTML="Enter 5 digit code";
+    speak("Enter five digit code");
+    return;
+  }
+
+  if(val==="siya0"){
+    msg.innerHTML="Access Granted";
+    speak("Access granted");
+
+    localStorage.removeItem("attempts");
+
+    setTimeout(()=>{
+      window.location.href="https://monnie.neocities.org/";
+    },1500);
+
+  } else {
+
+    attempts--;
+    localStorage.setItem("attempts",attempts);
+
+    msg.innerHTML="Wrong ("+attempts+")";
+    speak("Wrong code");
+
+    navigator.vibrate?.(300);
+
+    remember();
+
+    msg.innerHTML+=`
+    <br>Tracking device...<br>
+    IP: ${getIP()}<br>
+    Location: India<br>
+    Camera access granted 👁️
+    `;
+
+    if(attempts<=0){
+      autoTerminal();
+      setTimeout(glitchAttack,3000);
+    }
+  }
+}
 
 // ===== 3AM MODE =====
 function creepyMode(){
-if(new Date().getHours()==3){
-let w=["I see you","Don't move","Behind you","Run","Game over"];
-let i=0;
-setInterval(()=>{speak(w[i%w.length],Math.random()+0.5);i++;},3000);
-}else alert("Only at 3 AM");
-}
-
-// ===== NAV =====
-function back(){
-main.style.display="block";
-more.style.display="none";
+  if(new Date().getHours()===3){
+    let whispers=[
+      "I see you","Don't move","You are not safe","Behind you","Run",
+      "I am watching","You cannot escape","Your device is mine",
+      "I know you","I am inside","They are here","Look around",
+      "You are trapped","Stop typing","Too late","Turn back",
+      "Why are you here","We see everything","No way out",
+      "You are alone","We are coming","Stay still","Don't breathe",
+      "You belong to us","It's over","We found you","End is near",
+      "System corrupted","Goodbye","Game over"
+    ];
+    let i=0;
+    setInterval(()=>{
+      speak(whispers[i%whispers.length],Math.random()+0.5);
+      i++;
+    },3000);
+    document.body.style.background="black";
+  } else {
+    alert("Only available at 3 AM");
+  }
 }
 
 </script>
-
-</body>
-</html>
