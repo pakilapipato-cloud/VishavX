@@ -3,287 +3,583 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISHAV // SYSTEM</title>
+<title>VISHAV // DIGITAL SPACE</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    background:#020403;
+    color:#00ff66;
+    font-family:"Courier New",monospace;
+    min-height:100vh;
+    overflow:hidden;
+}
+
+/* MATRIX */
+#matrix{
+    position:fixed;
+    inset:0;
+    z-index:-5;
+    opacity:.10;
+}
+
+/* SCANLINES */
+body:after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:50;
+    background:repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,255,100,.025) 4px
+    );
+}
+
+/* TOP BAR */
+.topbar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:58px;
+    border-bottom:1px solid rgba(0,255,100,.25);
+    display:flex;
+    align-items:center;
+    padding:0 18px;
+    background:rgba(0,0,0,.72);
+    backdrop-filter:blur(10px);
+    z-index:40;
+}
+
+.menu{
+    width:38px;
+    height:38px;
+    border:1px solid #00ff66;
+    background:transparent;
+    color:#00ff66;
+    font-size:20px;
+    cursor:pointer;
+}
+
+.menu:hover{
+    background:#00ff66;
+    color:#000;
+    box-shadow:0 0 20px #00ff66;
+}
+
+.brand{
+    margin-left:15px;
+    letter-spacing:3px;
+    font-size:13px;
+}
+
+.status{
+    margin-left:auto;
+    font-size:11px;
+}
+
+.dot{
+    display:inline-block;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#00ff66;
+    margin-right:7px;
+    box-shadow:0 0 12px #00ff66;
+}
+
+/* MAIN */
+.main{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:70px 20px 20px;
+}
+
+.screen{
+    width:min(800px,94vw);
+    text-align:center;
+}
+
+/* LOGIN */
+.logo{
+    font-size:clamp(38px,9vw,75px);
+    font-weight:bold;
+    letter-spacing:8px;
+    text-shadow:
+        0 0 5px #00ff66,
+        0 0 20px #00ff66,
+        0 0 45px rgba(0,255,100,.45);
+}
+
+.subtitle{
+    margin-top:8px;
+    font-size:11px;
+    letter-spacing:5px;
+    color:#66ff99;
+}
+
+.line{
+    width:100%;
+    height:1px;
+    background:rgba(0,255,100,.3);
+    margin:35px 0;
+}
+
+.prompt{
+    margin-bottom:18px;
+    font-size:14px;
+    letter-spacing:2px;
+}
+
+.namebox{
+    width:100%;
+    height:52px;
+    background:rgba(0,255,100,.03);
+    border:1px solid #00ff66;
+    outline:none;
+    color:#00ff66;
+    padding:0 18px;
+    text-align:center;
+    font:16px "Courier New",monospace;
+}
+
+.namebox:focus{
+    box-shadow:0 0 20px rgba(0,255,100,.2);
+}
+
+.enter{
+    margin-top:15px;
+    height:45px;
+    padding:0 35px;
+    background:transparent;
+    border:1px solid #00ff66;
+    color:#00ff66;
+    font-family:inherit;
+    letter-spacing:2px;
+    cursor:pointer;
+}
+
+.enter:hover{
+    background:#00ff66;
+    color:#000;
+    box-shadow:0 0 25px #00ff66;
+}
+
+/* WELCOME */
+.welcome{
+    display:none;
+}
+
+.welcome h1{
+    font-size:clamp(25px,6vw,50px);
+    text-shadow:0 0 20px #00ff66;
+}
+
+.loading{
+    width:100%;
+    height:8px;
+    border:1px solid #00ff66;
+    padding:1px;
+    margin:25px auto;
+}
+
+.loading span{
+    display:block;
+    width:0;
+    height:100%;
+    background:#00ff66;
+    box-shadow:0 0 12px #00ff66;
+    transition:width 2s linear;
+}
+
+.console{
+    font-size:12px;
+    line-height:2;
+    color:#9affb8;
+}
+
+/* DASHBOARD */
+.dashboard{
+    display:none;
+}
+
+.dashboard-title{
+    font-size:clamp(25px,6vw,45px);
+    letter-spacing:5px;
+    text-shadow:0 0 20px #00ff66;
+}
+
+.dashboard-user{
+    margin-top:10px;
+    font-size:12px;
+    color:#66ff99;
+}
+
+.icons{
+    margin-top:38px;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:12px;
+}
+
+.icon{
+    aspect-ratio:1;
+    border:1px solid rgba(0,255,100,.35);
+    background:rgba(0,255,100,.025);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.icon:hover{
+    border-color:#00ff66;
+    background:rgba(0,255,100,.09);
+    transform:translateY(-5px);
+    box-shadow:0 0 25px rgba(0,255,100,.2);
+}
+
+.icon-symbol{
+    font-size:30px;
+    margin-bottom:13px;
+}
+
+.icon-name{
+    font-size:10px;
+    letter-spacing:1px;
+}
+
+.icon-desc{
+    margin-top:7px;
+    font-size:8px;
+    color:#59966e;
+}
+
+/* CONTENT MODAL */
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:35;
+    background:rgba(0,3,1,.96);
+    padding:90px 20px 30px;
+    overflow:auto;
+}
+
+.modal-inner{
+    width:min(750px,95vw);
+    margin:auto;
+    text-align:center;
+}
+
+.close{
+    position:fixed;
+    top:72px;
+    right:22px;
+    width:35px;
+    height:35px;
+    border:1px solid #00ff66;
+    background:transparent;
+    color:#00ff66;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.modal-title{
+    font-size:clamp(25px,7vw,55px);
+    letter-spacing:5px;
+    text-shadow:0 0 20px #00ff66;
+}
+
+.modal-sub{
+    margin-top:10px;
+    color:#66ff99;
+    font-size:11px;
+}
+
+/* IDENTITY */
+.identity-card{
+    margin-top:35px;
+    border:1px solid #00ff66;
+    padding:25px;
+    text-align:left;
+    background:rgba(0,255,100,.025);
+}
+
+.data-row{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    padding:13px 0;
+    border-bottom:1px solid rgba(0,255,100,.12);
+    font-size:12px;
+}
+
+.data-row:last-child{
+    border-bottom:none;
+}
+
+.data-value{
+    color:#d2ffe0;
+    text-align:right;
+}
+
+/* SIGNAL */
+.signal-circle{
+    width:210px;
+    height:210px;
+    border:1px solid #00ff66;
+    border-radius:50%;
+    margin:40px auto;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 30px rgba(0,255,100,.15);
+}
+
+.signal-circle:before,
+.signal-circle:after{
+    content:"";
+    position:absolute;
+    border:1px solid rgba(0,255,100,.5);
+    border-radius:50%;
+    animation:pulse 2s infinite;
+}
+
+.signal-circle:before{
+    inset:20px;
+}
+
+.signal-circle:after{
+    inset:50px;
+    animation-delay:.5s;
+}
+
+.signal-core{
+    width:18px;
+    height:18px;
+    background:#00ff66;
+    border-radius:50%;
+    box-shadow:0 0 25px #00ff66;
+    z-index:2;
+}
+
+.signal-data{
+    line-height:2.2;
+    font-size:12px;
+}
+
+@keyframes pulse{
+    0%{transform:scale(.7);opacity:1}
+    100%{transform:scale(1.4);opacity:0}
+}
+
+/* VAULT */
+.vault{
+    margin:40px auto;
+    width:min(500px,90vw);
+    border:1px solid #00ff66;
+    padding:20px;
+}
+
+.file{
+    border:1px solid rgba(0,255,100,.25);
+    padding:17px;
+    margin:10px 0;
+    cursor:pointer;
+    text-align:left;
+    transition:.2s;
+}
+
+.file:hover{
+    border-color:#00ff66;
+    background:rgba(0,255,100,.07);
+}
+
+.file-content{
+    display:none;
+    margin-top:12px;
+    color:#9affb8;
+    font-size:11px;
+    line-height:1.8;
+}
+
+/* TIME */
+.timeline{
+    margin:45px auto;
+    width:min(650px,95vw);
+}
+
+.time-line{
+    height:2px;
+    background:#00ff66;
+    position:relative;
+    margin:50px 0;
+}
+
+.time-point{
+    position:absolute;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:18px;
+    height:18px;
+    border:2px solid #00ff66;
+    border-radius:50%;
+    background:#020403;
+    cursor:pointer;
+}
+
+.time-point:hover{
+    background:#00ff66;
+    box-shadow:0 0 20px #00ff66;
+}
+
+.time-label{
+    position:absolute;
+    top:28px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:10px;
+}
+
+.time-output{
+    min-height:80px;
+    margin-top:40px;
+    border:1px solid rgba(0,255,100,.25);
+    padding:20px;
+    font-size:12px;
+}
+
+/* SECRET */
+.secret-box{
+    margin:50px auto;
+    width:min(600px,95vw);
+    border:1px solid rgba(0,255,100,.4);
+    padding:45px 25px;
+}
+
+.secret-lock{
+    font-size:65px;
+    margin-bottom:25px;
+}
+
+.secret-button{
+    margin-top:25px;
+    border:1px solid #00ff66;
+    color:#00ff66;
+    background:transparent;
+    padding:13px 25px;
+    font-family:inherit;
+    cursor:pointer;
+}
+
+.secret-button:hover{
+    background:#00ff66;
+    color:#000;
+}
+
+.secret-message{
+    display:none;
+    margin-top:25px;
+    color:#d2ffe0;
+    font-size:13px;
+    line-height:2;
+}
+
+/* DEVICE PANEL */
+.panel{
+    position:fixed;
+    top:58px;
+    left:-370px;
+    width:min(370px,90vw);
+    height:calc(100vh - 58px);
+    background:rgba(1,7,4,.97);
+    border-right:1px solid #00ff66;
+    z-index:45;
+    padding:22px;
+    transition:left .35s ease;
+    overflow-y:auto;
+}
+
+.panel.open{
+    left:0;
+}
+
+.panel-title{
+    font-size:13px;
+    letter-spacing:2px;
+    border-bottom:1px solid rgba(0,255,100,.3);
+    padding-bottom:15px;
+    margin-bottom:15px;
+}
+
+.info{
+    margin-bottom:13px;
+    font-size:11px;
+    word-break:break-word;
+}
+
+.info span:first-child{
+    color:#6aff9a;
+}
+
+.value{
+    display:block;
+    margin-top:3px;
+    color:#d2ffe0;
+}
+
+.warning{
+    margin-top:20px;
+    padding:10px;
+    border:1px solid rgba(0,255,100,.2);
+    color:#6aff9a;
+    font-size:9px;
+    line-height:1.6;
+}
+
+/* MOBILE */
+@media(max-width:650px){
+
+    .icons{
+        grid-template-columns:repeat(2,1fr);
+        max-width:430px;
+        margin-left:auto;
+        margin-right:auto;
     }
 
-    body {
-        background: #020403;
-        color: #00ff66;
-        font-family: "Courier New", monospace;
-        min-height: 100vh;
-        overflow: hidden;
+    .icon:last-child{
+        grid-column:1 / 3;
+        width:50%;
+        justify-self:center;
     }
 
-    /* Matrix background */
-    #matrix {
-        position: fixed;
-        inset: 0;
-        z-index: -2;
-        opacity: 0.12;
+    .data-row{
+        flex-direction:column;
+        gap:5px;
     }
 
-    /* CRT scanlines */
-    body::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 20;
-        background: repeating-linear-gradient(
-            to bottom,
-            transparent 0px,
-            transparent 3px,
-            rgba(0,255,100,0.025) 4px
-        );
+    .data-value{
+        text-align:left;
     }
 
-    .topbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 58px;
-        border-bottom: 1px solid rgba(0,255,100,.25);
-        display: flex;
-        align-items: center;
-        padding: 0 18px;
-        background: rgba(0,0,0,.65);
-        backdrop-filter: blur(8px);
-        z-index: 10;
+    .brand{
+        font-size:10px;
     }
-
-    .menu {
-        width: 38px;
-        height: 38px;
-        border: 1px solid #00ff66;
-        background: transparent;
-        color: #00ff66;
-        cursor: pointer;
-        font-size: 20px;
-        transition: .2s;
-    }
-
-    .menu:hover {
-        background: #00ff66;
-        color: #000;
-        box-shadow: 0 0 20px #00ff66;
-    }
-
-    .brand {
-        margin-left: 15px;
-        letter-spacing: 3px;
-        font-size: 14px;
-    }
-
-    .status {
-        margin-left: auto;
-        font-size: 12px;
-    }
-
-    .dot {
-        display: inline-block;
-        width: 7px;
-        height: 7px;
-        background: #00ff66;
-        border-radius: 50%;
-        margin-right: 7px;
-        box-shadow: 0 0 10px #00ff66;
-    }
-
-    /* Main */
-    .main {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 70px 20px 20px;
-    }
-
-    .terminal {
-        width: min(620px, 94vw);
-        text-align: center;
-    }
-
-    .logo {
-        font-size: clamp(34px, 8vw, 70px);
-        font-weight: bold;
-        letter-spacing: 8px;
-        text-shadow:
-            0 0 5px #00ff66,
-            0 0 20px #00ff66,
-            0 0 40px rgba(0,255,100,.5);
-        animation: flicker 4s infinite;
-    }
-
-    .subtitle {
-        margin-top: 8px;
-        color: #66ff99;
-        font-size: 12px;
-        letter-spacing: 4px;
-    }
-
-    .line {
-        width: 100%;
-        height: 1px;
-        background: rgba(0,255,100,.3);
-        margin: 35px 0;
-    }
-
-    .prompt {
-        font-size: 14px;
-        margin-bottom: 18px;
-        letter-spacing: 2px;
-    }
-
-    .namebox {
-        width: 100%;
-        height: 52px;
-        border: 1px solid #00ff66;
-        background: rgba(0,255,100,.03);
-        color: #00ff66;
-        outline: none;
-        padding: 0 18px;
-        font-family: inherit;
-        font-size: 16px;
-        text-align: center;
-        box-shadow: inset 0 0 20px rgba(0,255,100,.04);
-    }
-
-    .namebox:focus {
-        box-shadow:
-            0 0 15px rgba(0,255,100,.25),
-            inset 0 0 20px rgba(0,255,100,.05);
-    }
-
-    .enter {
-        margin-top: 15px;
-        height: 45px;
-        padding: 0 35px;
-        border: 1px solid #00ff66;
-        background: transparent;
-        color: #00ff66;
-        font-family: inherit;
-        cursor: pointer;
-        letter-spacing: 2px;
-        transition: .2s;
-    }
-
-    .enter:hover {
-        background: #00ff66;
-        color: #000;
-        box-shadow: 0 0 25px #00ff66;
-    }
-
-    .welcome {
-        display: none;
-    }
-
-    .welcome h1 {
-        font-size: clamp(28px, 6vw, 50px);
-        text-shadow: 0 0 20px #00ff66;
-    }
-
-    .loading {
-        margin: 25px auto;
-        width: 100%;
-        height: 8px;
-        border: 1px solid #00ff66;
-        padding: 1px;
-    }
-
-    .loading span {
-        display: block;
-        width: 0;
-        height: 100%;
-        background: #00ff66;
-        box-shadow: 0 0 12px #00ff66;
-        transition: width 2s linear;
-    }
-
-    .console {
-        margin-top: 25px;
-        font-size: 12px;
-        line-height: 2;
-        color: #9affb8;
-    }
-
-    /* Side panel */
-    .panel {
-        position: fixed;
-        top: 58px;
-        left: -370px;
-        width: min(370px, 90vw);
-        height: calc(100vh - 58px);
-        background: rgba(1,7,4,.96);
-        border-right: 1px solid #00ff66;
-        z-index: 15;
-        padding: 22px;
-        transition: left .35s ease;
-        overflow-y: auto;
-        box-shadow: 10px 0 40px rgba(0,255,100,.08);
-    }
-
-    .panel.open {
-        left: 0;
-    }
-
-    .panel-title {
-        font-size: 14px;
-        letter-spacing: 2px;
-        border-bottom: 1px solid rgba(0,255,100,.3);
-        padding-bottom: 15px;
-        margin-bottom: 15px;
-    }
-
-    .info {
-        margin-bottom: 13px;
-        font-size: 12px;
-        word-break: break-word;
-    }
-
-    .info span:first-child {
-        color: #6aff9a;
-    }
-
-    .value {
-        color: #d2ffe0;
-        display: block;
-        margin-top: 3px;
-    }
-
-    .warning {
-        margin-top: 20px;
-        padding: 10px;
-        border: 1px solid rgba(0,255,100,.2);
-        color: #6aff9a;
-        font-size: 10px;
-        line-height: 1.6;
-    }
-
-    @keyframes flicker {
-        0%, 19%, 21%, 63%, 64%, 100% { opacity: 1; }
-        20%, 62% { opacity: .65; }
-    }
-
-    @media(max-width:500px) {
-        .brand {
-            font-size: 11px;
-        }
-
-        .status {
-            font-size: 9px;
-        }
-
-        .logo {
-            letter-spacing: 5px;
-        }
-    }
+}
 </style>
 </head>
 
@@ -292,167 +588,550 @@
 <canvas id="matrix"></canvas>
 
 <header class="topbar">
+
     <button class="menu" onclick="togglePanel()">☰</button>
-    <div class="brand">VISHAV // TERMINAL</div>
+
+    <div class="brand">
+        VISHAV // DIGITAL SPACE
+    </div>
 
     <div class="status">
-        <span class="dot"></span>SYSTEM ONLINE
+        <span class="dot"></span>
+        SYSTEM ONLINE
     </div>
+
 </header>
 
+
+<!-- DEVICE PANEL -->
+
 <aside class="panel" id="panel">
-    <div class="panel-title">[ DEVICE INFORMATION ]</div>
+
+    <div class="panel-title">
+        [ DEVICE INFORMATION ]
+    </div>
 
     <div id="deviceInfo"></div>
 
     <div class="warning">
-        INFORMATION SHOWN HERE IS COLLECTED ONLY FROM
-        DATA EXPOSED BY YOUR WEB BROWSER. NO PRIVATE
-        FILES OR PASSWORDS ARE ACCESSED.
+        INFORMATION SHOWN HERE IS LIMITED TO DATA
+        EXPOSED BY YOUR WEB BROWSER.
     </div>
+
 </aside>
+
 
 <main class="main">
 
-    <section class="terminal">
+<section class="screen">
 
-        <div class="login" id="login">
 
-            <div class="logo">VISHAV</div>
-            <div class="subtitle">DIGITAL TERMINAL</div>
+<!-- LOGIN -->
 
-            <div class="line"></div>
+<div id="login">
 
-            <div class="prompt">
-                &gt; ENTER YOUR NAME_
-            </div>
+    <div class="logo">
+        VISHAV
+    </div>
 
-            <input
-                id="name"
-                class="namebox"
-                type="text"
-                maxlength="30"
-                autocomplete="off"
-                placeholder="type your name..."
-            >
+    <div class="subtitle">
+        DIGITAL TERMINAL
+    </div>
 
-            <button class="enter" onclick="enterSystem()">
-                [ ENTER ]
-            </button>
+    <div class="line"></div>
 
+    <div class="prompt">
+        &gt; ENTER YOUR NAME_
+    </div>
+
+    <input
+        id="name"
+        class="namebox"
+        type="text"
+        maxlength="30"
+        autocomplete="off"
+        placeholder="type your name..."
+    >
+
+    <button class="enter" onclick="enterSystem()">
+        [ ENTER ]
+    </button>
+
+</div>
+
+
+<!-- WELCOME -->
+
+<div id="welcome" class="welcome">
+
+    <div class="logo">
+        ACCESS GRANTED
+    </div>
+
+    <div class="line"></div>
+
+    <h1 id="welcomeName"></h1>
+
+    <div class="loading">
+        <span id="bar"></span>
+    </div>
+
+    <div class="console">
+        &gt; Initializing digital identity...<br>
+        &gt; Establishing secure session...<br>
+        &gt; Loading environment...
+    </div>
+
+</div>
+
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="dashboard">
+
+    <div class="dashboard-title">
+        DIGITAL SPACE
+    </div>
+
+    <div class="dashboard-user" id="dashboardUser"></div>
+
+    <div class="icons">
+
+        <div class="icon" onclick="openModal('identity')">
+            <div class="icon-symbol">🧬</div>
+            <div class="icon-name">IDENTITY</div>
+            <div class="icon-desc">DIGITAL PROFILE</div>
         </div>
 
-        <div class="welcome" id="welcome">
-
-            <div class="logo">ACCESS GRANTED</div>
-
-            <div class="line"></div>
-
-            <h1 id="welcomeName"></h1>
-
-            <div class="loading">
-                <span id="bar"></span>
-            </div>
-
-            <div class="console" id="console">
-                &gt; Initializing terminal...<br>
-                &gt; Establishing secure session...<br>
-                &gt; Loading user profile...
-            </div>
-
+        <div class="icon" onclick="openModal('signal')">
+            <div class="icon-symbol">📡</div>
+            <div class="icon-name">SIGNAL</div>
+            <div class="icon-desc">UNKNOWN SOURCE</div>
         </div>
 
-    </section>
+        <div class="icon" onclick="openModal('vault')">
+            <div class="icon-symbol">🔐</div>
+            <div class="icon-name">VAULT</div>
+            <div class="icon-desc">CLASSIFIED FILES</div>
+        </div>
+
+        <div class="icon" onclick="openModal('time')">
+            <div class="icon-symbol">⏳</div>
+            <div class="icon-name">TIME</div>
+            <div class="icon-desc">TIMELINE</div>
+        </div>
+
+        <div class="icon" onclick="openModal('secret')">
+            <div class="icon-symbol">🚪</div>
+            <div class="icon-name">SECRET</div>
+            <div class="icon-desc">RESTRICTED</div>
+        </div>
+
+    </div>
+
+</div>
+
+</section>
 
 </main>
 
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+<button class="close" onclick="closeModal()">×</button>
+
+<div class="modal-inner">
+
+    <!-- IDENTITY -->
+
+    <div id="identity" class="modal-content">
+
+        <div class="modal-title">
+            DIGITAL IDENTITY
+        </div>
+
+        <div class="modal-sub">
+            USER PROFILE GENERATED
+        </div>
+
+        <div class="identity-card">
+
+            <div class="data-row">
+                <span>NAME</span>
+                <span class="data-value" id="idName"></span>
+            </div>
+
+            <div class="data-row">
+                <span>USER ID</span>
+                <span class="data-value" id="userID"></span>
+            </div>
+
+            <div class="data-row">
+                <span>ACCESS LEVEL</span>
+                <span class="data-value">UNKNOWN</span>
+            </div>
+
+            <div class="data-row">
+                <span>STATUS</span>
+                <span class="data-value">ACTIVE</span>
+            </div>
+
+            <div class="data-row">
+                <span>SESSION</span>
+                <span class="data-value" id="sessionID"></span>
+            </div>
+
+            <div class="data-row">
+                <span>ENTRY TIME</span>
+                <span class="data-value" id="entryTime"></span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SIGNAL -->
+
+    <div id="signal" class="modal-content">
+
+        <div class="modal-title">
+            SIGNAL
+        </div>
+
+        <div class="modal-sub">
+            UNKNOWN SOURCE DETECTED
+        </div>
+
+        <div class="signal-circle">
+            <div class="signal-core"></div>
+        </div>
+
+        <div class="signal-data">
+
+            FREQUENCY:
+            <span id="frequency"></span>
+            <br>
+
+            SOURCE:
+            UNKNOWN
+            <br>
+
+            STATUS:
+            LISTENING...
+            <br>
+
+            SIGNAL:
+            <span id="signalStrength"></span>
+
+        </div>
+
+    </div>
+
+
+    <!-- VAULT -->
+
+    <div id="vault" class="modal-content">
+
+        <div class="modal-title">
+            DIGITAL VAULT
+        </div>
+
+        <div class="modal-sub">
+            CLASSIFIED ARCHIVE
+        </div>
+
+        <div class="vault">
+
+            <div class="file" onclick="openFile(this)">
+                [ FILE_001 ] — ORIGIN
+                <div class="file-content">
+                    Classification: UNKNOWN<br>
+                    Origin data has been partially erased.<br>
+                    Remaining records: 17%
+                </div>
+            </div>
+
+            <div class="file" onclick="openFile(this)">
+                [ FILE_002 ] — SIGNAL
+                <div class="file-content">
+                    A signal was detected before this session began.<br>
+                    Source could not be identified.
+                </div>
+            </div>
+
+            <div class="file" onclick="openFile(this)">
+                [ FILE_003 ] — USER
+                <div class="file-content">
+                    Identity created successfully.<br>
+                    Observation status: ACTIVE.
+                </div>
+            </div>
+
+            <div class="file" onclick="openFile(this)">
+                [ FILE_004 ] — FUTURE
+                <div class="file-content">
+                    ACCESS RESTRICTED.<br>
+                    This file has not been created yet.
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TIME -->
+
+    <div id="time" class="modal-content">
+
+        <div class="modal-title">
+            TIME
+        </div>
+
+        <div class="modal-sub">
+            SELECT A POINT IN THE TIMELINE
+        </div>
+
+        <div class="timeline">
+
+            <div class="time-line">
+
+                <div
+                    class="time-point"
+                    style="left:5%"
+                    onclick="timeEvent('1999')">
+
+                    <div class="time-label">1999</div>
+
+                </div>
+
+                <div
+                    class="time-point"
+                    style="left:35%"
+                    onclick="timeEvent('2015')">
+
+                    <div class="time-label">2015</div>
+
+                </div>
+
+                <div
+                    class="time-point"
+                    style="left:65%"
+                    onclick="timeEvent('2026')">
+
+                    <div class="time-label">2026</div>
+
+                </div>
+
+                <div
+                    class="time-point"
+                    style="left:95%"
+                    onclick="timeEvent('2035')">
+
+                    <div class="time-label">2035</div>
+
+                </div>
+
+            </div>
+
+            <div class="time-output" id="timeOutput">
+                SELECT A YEAR
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SECRET -->
+
+    <div id="secret" class="modal-content">
+
+        <div class="modal-title">
+            SECRET ROOM
+        </div>
+
+        <div class="modal-sub">
+            RESTRICTED ACCESS
+        </div>
+
+        <div class="secret-box">
+
+            <div class="secret-lock" id="secretLock">
+                🔒
+            </div>
+
+            <div id="secretText">
+                ACCESS DENIED
+            </div>
+
+            <button
+                class="secret-button"
+                onclick="unlockSecret()">
+
+                ATTEMPT ACCESS
+
+            </button>
+
+            <div
+                class="secret-message"
+                id="secretMessage">
+
+                YOU WEREN'T SUPPOSED TO FIND THIS.<br><br>
+
+                But you did.<br><br>
+
+                <span style="color:#00ff66;">
+                    SESSION OBSERVATION: ACTIVE
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+
 <script>
 
-/* ---------------- MATRIX ---------------- */
+/* MATRIX */
 
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("matrix");
+const ctx=canvas.getContext("2d");
 
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+function resizeCanvas(){
+
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+
 }
 
 resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
 
-const chars = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%";
-let fontSize = 14;
-let columns = Math.floor(window.innerWidth / fontSize);
-let drops = Array(columns).fill(1);
+window.addEventListener("resize",resizeCanvas);
 
-function matrix() {
+const chars="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%";
+const fontSize=14;
 
-    ctx.fillStyle = "rgba(0,0,0,0.06)";
+let columns=Math.floor(window.innerWidth/fontSize);
+let drops=Array(columns).fill(1);
+
+function matrix(){
+
+    ctx.fillStyle="rgba(0,0,0,.07)";
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    ctx.fillStyle = "#00ff66";
-    ctx.font = fontSize + "px monospace";
+    ctx.fillStyle="#00ff66";
+    ctx.font=fontSize+"px monospace";
 
-    for(let i = 0; i < drops.length; i++) {
+    for(let i=0;i<drops.length;i++){
 
-        const text = chars[Math.floor(Math.random() * chars.length)];
+        const text=chars[Math.floor(Math.random()*chars.length)];
 
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        ctx.fillText(
+            text,
+            i*fontSize,
+            drops[i]*fontSize
+        );
 
-        if(drops[i] * fontSize > canvas.height && Math.random() > .975) {
-            drops[i] = 0;
+        if(
+            drops[i]*fontSize>canvas.height
+            &&
+            Math.random()>.975
+        ){
+            drops[i]=0;
         }
 
         drops[i]++;
     }
 }
 
-setInterval(matrix, 45);
+setInterval(matrix,45);
 
 
-/* ---------------- PANEL ---------------- */
+/* PANEL */
 
-function togglePanel() {
-    document.getElementById("panel").classList.toggle("open");
+function togglePanel(){
+
+    document
+        .getElementById("panel")
+        .classList.toggle("open");
+
 }
 
 
-/* ---------------- DEVICE INFO ---------------- */
+/* DEVICE INFO */
 
-function addInfo(title, value) {
+function addInfo(title,value){
 
-    const container = document.getElementById("deviceInfo");
+    const container=document.getElementById("deviceInfo");
 
-    const item = document.createElement("div");
-    item.className = "info";
+    const item=document.createElement("div");
 
-    item.innerHTML = `
+    item.className="info";
+
+    item.innerHTML=`
         <span>${title}</span>
-        <span class="value">${value ?? "Not available"}</span>
+        <span class="value">
+            ${value ?? "Not available"}
+        </span>
     `;
 
     container.appendChild(item);
 }
 
-function collectDeviceInfo() {
+function getConnectionInfo(){
 
-    const nav = navigator;
+    const c=
+        navigator.connection ||
+        navigator.mozConnection ||
+        navigator.webkitConnection;
 
-    addInfo("USER AGENT", nav.userAgent);
-    addInfo("PLATFORM", nav.platform);
-    addInfo("LANGUAGE", nav.language);
-    addInfo("LANGUAGES", nav.languages?.join(", "));
-    addInfo("TIMEZONE", Intl.DateTimeFormat().resolvedOptions().timeZone);
+    if(!c) return "Not exposed";
+
+    return [
+        c.effectiveType,
+        c.downlink
+            ? c.downlink+" Mbps"
+            : "",
+        c.rtt
+            ? c.rtt+" ms RTT"
+            : ""
+    ]
+    .filter(Boolean)
+    .join(" | ");
+}
+
+function collectDeviceInfo(){
+
+    const n=navigator;
+
+    addInfo("USER AGENT",n.userAgent);
+    addInfo("PLATFORM",n.platform);
+    addInfo("LANGUAGE",n.language);
+
+    addInfo(
+        "TIMEZONE",
+        Intl.DateTimeFormat()
+        .resolvedOptions()
+        .timeZone
+    );
 
     addInfo(
         "SCREEN",
-        `${screen.width} × ${screen.height}`
+        screen.width+" × "+screen.height
     );
 
     addInfo(
         "VIEWPORT",
-        `${window.innerWidth} × ${window.innerHeight}`
+        window.innerWidth+" × "+window.innerHeight
     );
 
     addInfo(
@@ -462,44 +1141,38 @@ function collectDeviceInfo() {
 
     addInfo(
         "COLOR DEPTH",
-        screen.colorDepth + " bit"
+        screen.colorDepth+" bit"
     );
 
     addInfo(
         "CPU CORES",
-        nav.hardwareConcurrency
+        n.hardwareConcurrency
     );
 
     addInfo(
         "DEVICE MEMORY",
-        nav.deviceMemory
-        ? nav.deviceMemory + " GB (approx.)"
-        : "Not exposed by browser"
+        n.deviceMemory
+        ? n.deviceMemory+" GB approx."
+        : "Not exposed"
     );
 
     addInfo(
         "TOUCH POINTS",
-        nav.maxTouchPoints
+        n.maxTouchPoints
     );
 
     addInfo(
-        "COOKIES ENABLED",
-        nav.cookieEnabled ? "YES" : "NO"
+        "COOKIES",
+        n.cookieEnabled
+        ? "ENABLED"
+        : "DISABLED"
     );
 
     addInfo(
-        "ONLINE STATUS",
-        nav.onLine ? "ONLINE" : "OFFLINE"
-    );
-
-    addInfo(
-        "CURRENT URL",
-        location.href
-    );
-
-    addInfo(
-        "REFERRER",
-        document.referrer || "Direct visit"
+        "ONLINE",
+        n.onLine
+        ? "ONLINE"
+        : "OFFLINE"
     );
 
     addInfo(
@@ -507,86 +1180,236 @@ function collectDeviceInfo() {
         getConnectionInfo()
     );
 
-    addInfo(
-        "JAVA SCRIPT",
-        "ENABLED"
-    );
+    if("getBattery" in n){
 
-    if ("getBattery" in nav) {
-        nav.getBattery().then(battery => {
+        n.getBattery()
+        .then(b=>{
 
             addInfo(
                 "BATTERY",
-                Math.round(battery.level * 100) + "% " +
-                (battery.charging ? "(CHARGING)" : "(NOT CHARGING)")
+                Math.round(b.level*100)
+                +"% "+
+                (
+                    b.charging
+                    ? "(CHARGING)"
+                    : "(NOT CHARGING)"
+                )
             );
 
-        }).catch(() => {});
+        })
+        .catch(()=>{});
+
     }
-
-}
-
-function getConnectionInfo() {
-
-    const connection =
-        navigator.connection ||
-        navigator.mozConnection ||
-        navigator.webkitConnection;
-
-    if(!connection) return "Not exposed";
-
-    return [
-        connection.effectiveType,
-        connection.downlink
-            ? connection.downlink + " Mbps"
-            : "",
-        connection.rtt
-            ? connection.rtt + " ms RTT"
-            : ""
-    ].filter(Boolean).join(" | ");
 
 }
 
 collectDeviceInfo();
 
 
-/* ---------------- LOGIN ---------------- */
+/* LOGIN */
 
-function enterSystem() {
+let currentUser="";
+let generatedID="";
+let sessionID="";
 
-    const input = document.getElementById("name");
-    const name = input.value.trim();
+function randomID(prefix,length){
 
-    if(!name) {
+    const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
-        input.style.borderColor = "red";
+    let result=prefix+"-";
 
-        setTimeout(() => {
-            input.style.borderColor = "#00ff66";
-        }, 700);
+    for(let i=0;i<length;i++){
+
+        result+=chars[
+            Math.floor(Math.random()*chars.length)
+        ];
+
+    }
+
+    return result;
+}
+
+function enterSystem(){
+
+    const input=document.getElementById("name");
+
+    const name=input.value.trim();
+
+    if(!name){
+
+        input.style.borderColor="#ff3333";
+
+        setTimeout(()=>{
+            input.style.borderColor="#00ff66";
+        },700);
 
         return;
     }
 
-    document.getElementById("login").style.display = "none";
-    document.getElementById("welcome").style.display = "block";
+    currentUser=name;
 
-    document.getElementById("welcomeName").textContent =
-        "WELCOME, " + name.toUpperCase();
+    generatedID=randomID("VX",6);
+    sessionID=randomID("S",8);
 
-    setTimeout(() => {
-        document.getElementById("bar").style.width = "100%";
-    }, 100);
+    document.getElementById("login").style.display="none";
+
+    document.getElementById("welcome").style.display="block";
+
+    document.getElementById("welcomeName").textContent=
+        "WELCOME, "+name.toUpperCase();
+
+    setTimeout(()=>{
+
+        document.getElementById("bar").style.width="100%";
+
+    },100);
+
+    setTimeout(()=>{
+
+        document.getElementById("welcome").style.display="none";
+
+        document.getElementById("dashboard").style.display="block";
+
+        document.getElementById("dashboardUser").textContent=
+            "SESSION ACTIVE // "+name.toUpperCase();
+
+    },2600);
 
 }
 
 
 /* ENTER KEY */
 
-document.getElementById("name").addEventListener("keydown", function(e) {
+document
+    .getElementById("name")
+    .addEventListener("keydown",function(e){
 
-    if(e.key === "Enter") {
-        enterSystem();
+        if(e.key==="Enter"){
+            enterSystem();
+        }
+
+    });
+
+
+/* MODALS */
+
+function openModal(id){
+
+    document.getElementById("modal").style.display="block";
+
+    document
+        .querySelectorAll(".modal-content")
+        .forEach(el=>{
+            el.style.display="none";
+        });
+
+    document.getElementById(id).style.display="block";
+
+    if(id==="identity"){
+
+        document.getElementById("idName")
+            .textContent=currentUser.toUpperCase();
+
+        document.getElementById("userID")
+            .textContent=generatedID;
+
+        document.getElementById("sessionID")
+            .textContent=sessionID;
+
+        document.getElementById("entryTime")
+            .textContent=new Date().toLocaleTimeString();
+
+    }
+
+    if(id==="signal"){
+
+        document.getElementById("frequency")
+            .textContent=
+            (70+Math.random()*10)
+            .toFixed(2)+" MHz";
+
+        document.getElementById("signalStrength")
+            .textContent=
+            Math.floor(50+Math.random()*49)+"%";
+
+    }
+
+}
+
+function closeModal(){
+
+    document.getElementById("modal").style.display="none";
+
+}
+
+
+/* VAULT FILES */
+
+function openFile(element){
+
+    const content=element.querySelector(".file-content");
+
+    content.style.display=
+        content.style.display==="block"
+        ? "none"
+        : "block";
+
+}
+
+
+/* TIME */
+
+function timeEvent(year){
+
+    const output=document.getElementById("timeOutput");
+
+    const messages={
+
+        "1999":
+        "SYSTEM ORIGIN // An old digital signal begins.",
+
+        "2015":
+        "ARCHIVE // The network starts changing rapidly.",
+
+        "2026":
+        "PRESENT // You are here. Session is active.",
+
+        "2035":
+        "FUTURE // DATA NOT YET AVAILABLE."
+
+    };
+
+    output.textContent=
+        messages[year] || "UNKNOWN TIMELINE";
+
+}
+
+
+/* SECRET */
+
+function unlockSecret(){
+
+    const lock=document.getElementById("secretLock");
+
+    const text=document.getElementById("secretText");
+
+    const message=document.getElementById("secretMessage");
+
+    lock.textContent="🔓";
+
+    text.textContent="ACCESS GRANTED";
+
+    message.style.display="block";
+
+}
+
+
+/* ESC CLOSE */
+
+document.addEventListener("keydown",function(e){
+
+    if(e.key==="Escape"){
+        closeModal();
     }
 
 });
