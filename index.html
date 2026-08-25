@@ -1,63 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VISHAV // SYSTEM</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: #020403;
+        color: #00ff66;
+        font-family: "Courier New", monospace;
+        min-height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Matrix background */
+    #matrix {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        opacity: 0.12;
+    }
+
+    /* CRT scanlines */
+    body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 20;
+        background: repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 3px,
+            rgba(0,255,100,0.025) 4px
+        );
+    }
+
+    .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 58px;
+        border-bottom: 1px solid rgba(0,255,100,.25);
+        display: flex;
+        align-items: center;
+        padding: 0 18px;
+        background: rgba(0,0,0,.65);
+        backdrop-filter: blur(8px);
+        z-index: 10;
+    }
+
+    .menu {
+        width: 38px;
+        height: 38px;
+        border: 1px solid #00ff66;
+        background: transparent;
+        color: #00ff66;
+        cursor: pointer;
+        font-size: 20px;
+        transition: .2s;
+    }
+
+    .menu:hover {
+        background: #00ff66;
+        color: #000;
+        box-shadow: 0 0 20px #00ff66;
+    }
+
+    .brand {
+        margin-left: 15px;
+        letter-spacing: 3px;
+        font-size: 14px;
+    }
+
+    .status {
+        margin-left: auto;
+        font-size: 12px;
+    }
+
+    .dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        background: #00ff66;
+        border-radius: 50%;
+        margin-right: 7px;
+        box-shadow: 0 0 10px #00ff66;
+    }
+
+    /* Main */
+    .main {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 70px 20px 20px;
+    }
+
+    .terminal {
+        width: min(620px, 94vw);
+        text-align: center;
+    }
+
+    .logo {
+        font-size: clamp(34px, 8vw, 70px);
+        font-weight: bold;
+        letter-spacing: 8px;
+        text-shadow:
+            0 0 5px #00ff66,
+            0 0 20px #00ff66,
+            0 0 40px rgba(0,255,100,.5);
+        animation: flicker 4s infinite;
+    }
+
+    .subtitle {
+        margin-top: 8px;
+        color: #66ff99;
+        font-size: 12px;
+        letter-spacing: 4px;
+    }
+
+    .line {
+        width: 100%;
+        height: 1px;
+        background: rgba(0,255,100,.3);
+        margin: 35px 0;
+    }
+
+    .prompt {
+        font-size: 14px;
+        margin-bottom: 18px;
+        letter-spacing: 2px;
+    }
+
+    .namebox {
+        width: 100%;
+        height: 52px;
+        border: 1px solid #00ff66;
+        background: rgba(0,255,100,.03);
+        color: #00ff66;
+        outline: none;
+        padding: 0 18px;
+        font-family: inherit;
+        font-size: 16px;
+        text-align: center;
+        box-shadow: inset 0 0 20px rgba(0,255,100,.04);
+    }
+
+    .namebox:focus {
+        box-shadow:
+            0 0 15px rgba(0,255,100,.25),
+            inset 0 0 20px rgba(0,255,100,.05);
+    }
+
+    .enter {
+        margin-top: 15px;
+        height: 45px;
+        padding: 0 35px;
+        border: 1px solid #00ff66;
+        background: transparent;
+        color: #00ff66;
+        font-family: inherit;
+        cursor: pointer;
+        letter-spacing: 2px;
+        transition: .2s;
+    }
+
+    .enter:hover {
+        background: #00ff66;
+        color: #000;
+        box-shadow: 0 0 25px #00ff66;
+    }
+
+    .welcome {
+        display: none;
+    }
+
+    .welcome h1 {
+        font-size: clamp(28px, 6vw, 50px);
+        text-shadow: 0 0 20px #00ff66;
+    }
+
+    .loading {
+        margin: 25px auto;
+        width: 100%;
+        height: 8px;
+        border: 1px solid #00ff66;
+        padding: 1px;
+    }
+
+    .loading span {
+        display: block;
+        width: 0;
+        height: 100%;
+        background: #00ff66;
+        box-shadow: 0 0 12px #00ff66;
+        transition: width 2s linear;
+    }
+
+    .console {
+        margin-top: 25px;
+        font-size: 12px;
+        line-height: 2;
+        color: #9affb8;
+    }
+
+    /* Side panel */
+    .panel {
+        position: fixed;
+        top: 58px;
+        left: -370px;
+        width: min(370px, 90vw);
+        height: calc(100vh - 58px);
+        background: rgba(1,7,4,.96);
+        border-right: 1px solid #00ff66;
+        z-index: 15;
+        padding: 22px;
+        transition: left .35s ease;
+        overflow-y: auto;
+        box-shadow: 10px 0 40px rgba(0,255,100,.08);
+    }
+
+    .panel.open {
+        left: 0;
+    }
+
+    .panel-title {
+        font-size: 14px;
+        letter-spacing: 2px;
+        border-bottom: 1px solid rgba(0,255,100,.3);
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+
+    .info {
+        margin-bottom: 13px;
+        font-size: 12px;
+        word-break: break-word;
+    }
+
+    .info span:first-child {
+        color: #6aff9a;
+    }
+
+    .value {
+        color: #d2ffe0;
+        display: block;
+        margin-top: 3px;
+    }
+
+    .warning {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid rgba(0,255,100,.2);
+        color: #6aff9a;
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    @keyframes flicker {
+        0%, 19%, 21%, 63%, 64%, 100% { opacity: 1; }
+        20%, 62% { opacity: .65; }
+    }
+
+    @media(max-width:500px) {
+        .brand {
+            font-size: 11px;
+        }
+
+        .status {
+            font-size: 9px;
+        }
+
+        .logo {
+            letter-spacing: 5px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<header class="topbar">
+    <button class="menu" onclick="togglePanel()">☰</button>
+    <div class="brand">VISHAV // TERMINAL</div>
+
+    <div class="status">
+        <span class="dot"></span>SYSTEM ONLINE
+    </div>
+</header>
+
+<aside class="panel" id="panel">
+    <div class="panel-title">[ DEVICE INFORMATION ]</div>
+
+    <div id="deviceInfo"></div>
+
+    <div class="warning">
+        INFORMATION SHOWN HERE IS COLLECTED ONLY FROM
+        DATA EXPOSED BY YOUR WEB BROWSER. NO PRIVATE
+        FILES OR PASSWORDS ARE ACCESSED.
+    </div>
+</aside>
+
+<main class="main">
+
+    <section class="terminal">
+
+        <div class="login" id="login">
+
+            <div class="logo">VISHAV</div>
+            <div class="subtitle">DIGITAL TERMINAL</div>
+
+            <div class="line"></div>
+
+            <div class="prompt">
+                &gt; ENTER YOUR NAME_
+            </div>
+
+            <input
+                id="name"
+                class="namebox"
+                type="text"
+                maxlength="30"
+                autocomplete="off"
+                placeholder="type your name..."
+            >
+
+            <button class="enter" onclick="enterSystem()">
+                [ ENTER ]
+            </button>
+
+        </div>
+
+        <div class="welcome" id="welcome">
+
+            <div class="logo">ACCESS GRANTED</div>
+
+            <div class="line"></div>
+
+            <h1 id="welcomeName"></h1>
+
+            <div class="loading">
+                <span id="bar"></span>
+            </div>
+
+            <div class="console" id="console">
+                &gt; Initializing terminal...<br>
+                &gt; Establishing secure session...<br>
+                &gt; Loading user profile...
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
 <script>
 
-// ===== DEVICE INFO =====
-function deviceInfo(){
-  let info = `
-  Device: ${navigator.platform}<br>
-  Browser: ${navigator.userAgent.split(" ")[0]}<br>
-  Screen: ${screen.width}x${screen.height}<br>
-  Time: ${new Date().toLocaleTimeString()}
-  `;
-  msg.innerHTML += "<br>" + info;
+/* ---------------- MATRIX ---------------- */
+
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
 
-// ===== CAMERA FAKE =====
-function fakeCamera(){
-  msg.innerHTML += "<br>Camera initializing...<br>Face detected 👁️";
-  speak("Camera access granted");
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+const chars = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%";
+let fontSize = 14;
+let columns = Math.floor(window.innerWidth / fontSize);
+let drops = Array(columns).fill(1);
+
+function matrix() {
+
+    ctx.fillStyle = "rgba(0,0,0,0.06)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "#00ff66";
+    ctx.font = fontSize + "px monospace";
+
+    for(let i = 0; i < drops.length; i++) {
+
+        const text = chars[Math.floor(Math.random() * chars.length)];
+
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if(drops[i] * fontSize > canvas.height && Math.random() > .975) {
+            drops[i] = 0;
+        }
+
+        drops[i]++;
+    }
 }
 
-// ===== HARD GLITCH =====
-function insaneGlitch(){
-  let i=0;
-  let int=setInterval(()=>{
-    document.body.style.transform = `scale(${1+i*0.02}) rotate(${i*2}deg)`;
-    document.body.style.background = i%2?"red":"black";
-    i++;
-    if(i>10){clearInterval(int);document.body.style.transform="none";}
-  },100);
+setInterval(matrix, 45);
+
+
+/* ---------------- PANEL ---------------- */
+
+function togglePanel() {
+    document.getElementById("panel").classList.toggle("open");
 }
 
-// ===== TERMINAL AUTO =====
-function autoTerminal(){
-  let lines = [
-    "> accessing system...",
-    "> decrypting files...",
-    "> downloading user data...",
-    "> breach complete"
-  ];
-  let i=0;
 
-  let int=setInterval(()=>{
-    msg.innerHTML += "<br>" + lines[i];
-    i++;
-    if(i>=lines.length) clearInterval(int);
-  },800);
+/* ---------------- DEVICE INFO ---------------- */
+
+function addInfo(title, value) {
+
+    const container = document.getElementById("deviceInfo");
+
+    const item = document.createElement("div");
+    item.className = "info";
+
+    item.innerHTML = `
+        <span>${title}</span>
+        <span class="value">${value ?? "Not available"}</span>
+    `;
+
+    container.appendChild(item);
 }
 
-// ===== WHISPER VOICE =====
-setInterval(()=>{
-  if(Math.random()>0.85){
-    speak("I see you");
-  }
-},12000);
+function collectDeviceInfo() {
 
-// ===== TRIGGER ALL =====
-function insaneMode(){
-  deviceInfo();
-  fakeCamera();
-  autoTerminal();
-  insaneGlitch();
+    const nav = navigator;
+
+    addInfo("USER AGENT", nav.userAgent);
+    addInfo("PLATFORM", nav.platform);
+    addInfo("LANGUAGE", nav.language);
+    addInfo("LANGUAGES", nav.languages?.join(", "));
+    addInfo("TIMEZONE", Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+    addInfo(
+        "SCREEN",
+        `${screen.width} × ${screen.height}`
+    );
+
+    addInfo(
+        "VIEWPORT",
+        `${window.innerWidth} × ${window.innerHeight}`
+    );
+
+    addInfo(
+        "PIXEL RATIO",
+        window.devicePixelRatio
+    );
+
+    addInfo(
+        "COLOR DEPTH",
+        screen.colorDepth + " bit"
+    );
+
+    addInfo(
+        "CPU CORES",
+        nav.hardwareConcurrency
+    );
+
+    addInfo(
+        "DEVICE MEMORY",
+        nav.deviceMemory
+        ? nav.deviceMemory + " GB (approx.)"
+        : "Not exposed by browser"
+    );
+
+    addInfo(
+        "TOUCH POINTS",
+        nav.maxTouchPoints
+    );
+
+    addInfo(
+        "COOKIES ENABLED",
+        nav.cookieEnabled ? "YES" : "NO"
+    );
+
+    addInfo(
+        "ONLINE STATUS",
+        nav.onLine ? "ONLINE" : "OFFLINE"
+    );
+
+    addInfo(
+        "CURRENT URL",
+        location.href
+    );
+
+    addInfo(
+        "REFERRER",
+        document.referrer || "Direct visit"
+    );
+
+    addInfo(
+        "CONNECTION",
+        getConnectionInfo()
+    );
+
+    addInfo(
+        "JAVA SCRIPT",
+        "ENABLED"
+    );
+
+    if ("getBattery" in nav) {
+        nav.getBattery().then(battery => {
+
+            addInfo(
+                "BATTERY",
+                Math.round(battery.level * 100) + "% " +
+                (battery.charging ? "(CHARGING)" : "(NOT CHARGING)")
+            );
+
+        }).catch(() => {});
+    }
+
 }
+
+function getConnectionInfo() {
+
+    const connection =
+        navigator.connection ||
+        navigator.mozConnection ||
+        navigator.webkitConnection;
+
+    if(!connection) return "Not exposed";
+
+    return [
+        connection.effectiveType,
+        connection.downlink
+            ? connection.downlink + " Mbps"
+            : "",
+        connection.rtt
+            ? connection.rtt + " ms RTT"
+            : ""
+    ].filter(Boolean).join(" | ");
+
+}
+
+collectDeviceInfo();
+
+
+/* ---------------- LOGIN ---------------- */
+
+function enterSystem() {
+
+    const input = document.getElementById("name");
+    const name = input.value.trim();
+
+    if(!name) {
+
+        input.style.borderColor = "red";
+
+        setTimeout(() => {
+            input.style.borderColor = "#00ff66";
+        }, 700);
+
+        return;
+    }
+
+    document.getElementById("login").style.display = "none";
+    document.getElementById("welcome").style.display = "block";
+
+    document.getElementById("welcomeName").textContent =
+        "WELCOME, " + name.toUpperCase();
+
+    setTimeout(() => {
+        document.getElementById("bar").style.width = "100%";
+    }, 100);
+
+}
+
+
+/* ENTER KEY */
+
+document.getElementById("name").addEventListener("keydown", function(e) {
+
+    if(e.key === "Enter") {
+        enterSystem();
+    }
+
+});
 
 </script>
+
+</body>
+</html>
