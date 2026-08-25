@@ -3,10 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VISHAV // DIGITAL SPACE</title>
+<title>VISHAV // SYSTEM</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
 body{
     background:#020403;
@@ -16,22 +20,26 @@ body{
     overflow:hidden;
 }
 
+/* MATRIX BACKGROUND */
+
 #matrix{
     position:fixed;
     inset:0;
-    z-index:-5;
-    opacity:.10;
+    z-index:-2;
+    opacity:.12;
 }
 
-body:after{
+/* CRT SCANLINES */
+
+body::after{
     content:"";
     position:fixed;
     inset:0;
     pointer-events:none;
-    z-index:50;
+    z-index:100;
     background:repeating-linear-gradient(
         to bottom,
-        transparent 0,
+        transparent 0px,
         transparent 3px,
         rgba(0,255,100,.025) 4px
     );
@@ -49,9 +57,9 @@ body:after{
     display:flex;
     align-items:center;
     padding:0 18px;
-    background:rgba(0,0,0,.72);
-    backdrop-filter:blur(10px);
-    z-index:40;
+    background:rgba(0,0,0,.65);
+    backdrop-filter:blur(8px);
+    z-index:30;
 }
 
 .menu{
@@ -60,8 +68,9 @@ body:after{
     border:1px solid #00ff66;
     background:transparent;
     color:#00ff66;
-    font-size:20px;
     cursor:pointer;
+    font-size:20px;
+    transition:.2s;
 }
 
 .menu:hover{
@@ -73,22 +82,22 @@ body:after{
 .brand{
     margin-left:15px;
     letter-spacing:3px;
-    font-size:13px;
+    font-size:14px;
 }
 
 .status{
     margin-left:auto;
-    font-size:11px;
+    font-size:12px;
 }
 
 .dot{
     display:inline-block;
     width:7px;
     height:7px;
-    border-radius:50%;
     background:#00ff66;
+    border-radius:50%;
     margin-right:7px;
-    box-shadow:0 0 12px #00ff66;
+    box-shadow:0 0 10px #00ff66;
 }
 
 /* MAIN */
@@ -101,28 +110,29 @@ body:after{
     padding:70px 20px 20px;
 }
 
-.screen{
+.terminal{
     width:min(850px,94vw);
     text-align:center;
 }
 
-/* LOGIN */
+/* LOGO */
 
 .logo{
-    font-size:clamp(38px,9vw,75px);
+    font-size:clamp(34px,8vw,70px);
     font-weight:bold;
     letter-spacing:8px;
     text-shadow:
         0 0 5px #00ff66,
         0 0 20px #00ff66,
-        0 0 45px rgba(0,255,100,.45);
+        0 0 40px rgba(0,255,100,.5);
+    animation:flicker 4s infinite;
 }
 
 .subtitle{
     margin-top:8px;
-    font-size:11px;
-    letter-spacing:5px;
     color:#66ff99;
+    font-size:12px;
+    letter-spacing:4px;
 }
 
 .line{
@@ -132,38 +142,44 @@ body:after{
     margin:35px 0;
 }
 
+/* LOGIN */
+
 .prompt{
-    margin-bottom:18px;
     font-size:14px;
+    margin-bottom:18px;
     letter-spacing:2px;
 }
 
 .namebox{
     width:100%;
     height:52px;
-    background:rgba(0,255,100,.03);
     border:1px solid #00ff66;
-    outline:none;
+    background:rgba(0,255,100,.03);
     color:#00ff66;
+    outline:none;
     padding:0 18px;
+    font-family:inherit;
+    font-size:16px;
     text-align:center;
-    font:16px "Courier New",monospace;
 }
 
 .namebox:focus{
-    box-shadow:0 0 20px rgba(0,255,100,.2);
+    box-shadow:
+        0 0 15px rgba(0,255,100,.25),
+        inset 0 0 20px rgba(0,255,100,.05);
 }
 
 .enter{
     margin-top:15px;
     height:45px;
     padding:0 35px;
-    background:transparent;
     border:1px solid #00ff66;
+    background:transparent;
     color:#00ff66;
     font-family:inherit;
-    letter-spacing:2px;
     cursor:pointer;
+    letter-spacing:2px;
+    transition:.2s;
 }
 
 .enter:hover{
@@ -179,16 +195,16 @@ body:after{
 }
 
 .welcome h1{
-    font-size:clamp(25px,6vw,50px);
+    font-size:clamp(28px,6vw,50px);
     text-shadow:0 0 20px #00ff66;
 }
 
 .loading{
+    margin:25px auto;
     width:100%;
     height:8px;
     border:1px solid #00ff66;
     padding:1px;
-    margin:25px auto;
 }
 
 .loading span{
@@ -201,6 +217,7 @@ body:after{
 }
 
 .console{
+    margin-top:25px;
     font-size:12px;
     line-height:2;
     color:#9affb8;
@@ -213,7 +230,7 @@ body:after{
 }
 
 .dashboard-title{
-    font-size:clamp(25px,6vw,45px);
+    font-size:clamp(27px,6vw,48px);
     letter-spacing:5px;
     text-shadow:0 0 20px #00ff66;
 }
@@ -251,19 +268,73 @@ body:after{
 }
 
 .icon-symbol{
-    font-size:28px;
-    margin-bottom:12px;
+    font-size:30px;
+    margin-bottom:13px;
 }
 
 .icon-name{
-    font-size:9px;
+    font-size:10px;
     letter-spacing:1px;
 }
 
 .icon-desc{
     margin-top:7px;
-    font-size:7px;
+    font-size:8px;
     color:#59966e;
+}
+
+/* DEVICE PANEL */
+
+.panel{
+    position:fixed;
+    top:58px;
+    left:-370px;
+    width:min(370px,90vw);
+    height:calc(100vh - 58px);
+    background:rgba(1,7,4,.96);
+    border-right:1px solid #00ff66;
+    z-index:40;
+    padding:22px;
+    transition:left .35s ease;
+    overflow-y:auto;
+    box-shadow:10px 0 40px rgba(0,255,100,.08);
+}
+
+.panel.open{
+    left:0;
+}
+
+.panel-title{
+    font-size:14px;
+    letter-spacing:2px;
+    border-bottom:1px solid rgba(0,255,100,.3);
+    padding-bottom:15px;
+    margin-bottom:15px;
+}
+
+.info{
+    margin-bottom:13px;
+    font-size:12px;
+    word-break:break-word;
+}
+
+.info span:first-child{
+    color:#6aff9a;
+}
+
+.value{
+    color:#d2ffe0;
+    display:block;
+    margin-top:3px;
+}
+
+.warning{
+    margin-top:20px;
+    padding:10px;
+    border:1px solid rgba(0,255,100,.2);
+    color:#6aff9a;
+    font-size:10px;
+    line-height:1.6;
 }
 
 /* MODAL */
@@ -275,7 +346,7 @@ body:after{
     z-index:35;
     background:rgba(0,3,1,.97);
     padding:90px 20px 30px;
-    overflow:auto;
+    overflow-y:auto;
 }
 
 .modal-inner{
@@ -295,6 +366,16 @@ body:after{
     color:#00ff66;
     cursor:pointer;
     font-size:18px;
+    z-index:60;
+}
+
+.close:hover{
+    background:#00ff66;
+    color:#000;
+}
+
+.modal-content{
+    display:none;
 }
 
 .modal-title{
@@ -361,7 +442,10 @@ body:after{
     animation:pulse 2s infinite;
 }
 
-.signal-circle:before{inset:20px}
+.signal-circle:before{
+    inset:20px;
+}
+
 .signal-circle:after{
     inset:50px;
     animation-delay:.5s;
@@ -382,8 +466,15 @@ body:after{
 }
 
 @keyframes pulse{
-    0%{transform:scale(.7);opacity:1}
-    100%{transform:scale(1.4);opacity:0}
+    0%{
+        transform:scale(.7);
+        opacity:1;
+    }
+
+    100%{
+        transform:scale(1.4);
+        opacity:0;
+    }
 }
 
 /* VAULT */
@@ -517,6 +608,7 @@ body:after{
     margin-bottom:18px;
     border-bottom:1px solid rgba(0,255,100,.2);
     font-size:11px;
+    line-height:1.8;
 }
 
 .download-item{
@@ -574,67 +666,16 @@ body:after{
     text-shadow:0 0 10px #00ff66;
 }
 
-/* DEVICE PANEL */
+/* FLICKER */
 
-.panel{
-    position:fixed;
-    top:58px;
-    left:-370px;
-    width:min(370px,90vw);
-    height:calc(100vh - 58px);
-    background:rgba(1,7,4,.97);
-    border-right:1px solid #00ff66;
-    z-index:45;
-    padding:22px;
-    transition:left .35s ease;
-    overflow-y:auto;
-}
+@keyframes flicker{
+    0%,19%,21%,63%,64%,100%{
+        opacity:1;
+    }
 
-.panel.open{left:0}
-
-.panel-title{
-    font-size:13px;
-    letter-spacing:2px;
-    border-bottom:1px solid rgba(0,255,100,.3);
-    padding-bottom:15px;
-    margin-bottom:15px;
-}
-
-.info{
-    margin-bottom:13px;
-    font-size:11px;
-    word-break:break-word;
-}
-
-.info span:first-child{color:#6aff9a}
-
-.value{
-    display:block;
-    margin-top:3px;
-    color:#d2ffe0;
-}
-
-.warning{
-    margin-top:20px;
-    padding:10px;
-    border:1px solid rgba(0,255,100,.2);
-    color:#6aff9a;
-    font-size:9px;
-    line-height:1.6;
-}
-
-/* GLITCH */
-
-.glitch{
-    animation:glitch .18s infinite;
-}
-
-@keyframes glitch{
-    0%{transform:translate(0)}
-    25%{transform:translate(2px,-1px)}
-    50%{transform:translate(-2px,1px)}
-    75%{transform:translate(1px,2px)}
-    100%{transform:translate(0)}
+    20%,62%{
+        opacity:.65;
+    }
 }
 
 /* MOBILE */
@@ -645,22 +686,23 @@ body:after{
         grid-template-columns:repeat(3,1fr);
     }
 
-    .icon-symbol{font-size:25px}
+    .icon-symbol{
+        font-size:25px;
+    }
 
-    .icon-name{font-size:8px}
+    .icon-name{
+        font-size:8px;
+    }
 
-    .icon-desc{display:none}
+    .icon-desc{
+        display:none;
+    }
 }
 
 @media(max-width:480px){
 
     .icons{
         grid-template-columns:repeat(2,1fr);
-    }
-
-    .icon:last-child{
-        grid-column:auto;
-        width:auto;
     }
 
     .data-row{
@@ -673,7 +715,7 @@ body:after{
     }
 
     .brand{
-        font-size:9px;
+        font-size:10px;
     }
 }
 </style>
@@ -683,12 +725,15 @@ body:after{
 
 <canvas id="matrix"></canvas>
 
+
+<!-- TOP BAR -->
+
 <header class="topbar">
 
     <button class="menu" onclick="togglePanel()">☰</button>
 
     <div class="brand">
-        VISHAV // DIGITAL SPACE
+        VISHAV // SYSTEM
     </div>
 
     <div class="status">
@@ -699,7 +744,7 @@ body:after{
 </header>
 
 
-<!-- DEVICE INFORMATION -->
+<!-- DEVICE INFORMATION PANEL -->
 
 <aside class="panel" id="panel">
 
@@ -719,14 +764,16 @@ body:after{
 
 <main class="main">
 
-<section class="screen">
+<section class="terminal">
 
 
-<!-- LOGIN -->
+<!-- LOGIN SCREEN -->
 
 <div id="login">
 
-    <div class="logo">VISHAV</div>
+    <div class="logo">
+        VISHAV
+    </div>
 
     <div class="subtitle">
         DIGITAL TERMINAL
@@ -754,11 +801,13 @@ body:after{
 </div>
 
 
-<!-- WELCOME -->
+<!-- ACCESS GRANTED -->
 
 <div id="welcome" class="welcome">
 
-    <div class="logo">ACCESS GRANTED</div>
+    <div class="logo">
+        ACCESS GRANTED
+    </div>
 
     <div class="line"></div>
 
@@ -789,40 +838,105 @@ body:after{
 
     <div class="icons">
 
+        <!-- 1 -->
+
         <div class="icon" onclick="openModal('identity')">
+
             <div class="icon-symbol">🧬</div>
-            <div class="icon-name">IDENTITY</div>
-            <div class="icon-desc">DIGITAL PROFILE</div>
+
+            <div class="icon-name">
+                IDENTITY
+            </div>
+
+            <div class="icon-desc">
+                DIGITAL PROFILE
+            </div>
+
         </div>
+
+
+        <!-- 2 -->
 
         <div class="icon" onclick="openModal('signal')">
+
             <div class="icon-symbol">📡</div>
-            <div class="icon-name">SIGNAL</div>
-            <div class="icon-desc">UNKNOWN SOURCE</div>
+
+            <div class="icon-name">
+                SIGNAL
+            </div>
+
+            <div class="icon-desc">
+                UNKNOWN SOURCE
+            </div>
+
         </div>
+
+
+        <!-- 3 -->
 
         <div class="icon" onclick="openModal('vault')">
+
             <div class="icon-symbol">🔐</div>
-            <div class="icon-name">VAULT</div>
-            <div class="icon-desc">CLASSIFIED FILES</div>
+
+            <div class="icon-name">
+                VAULT
+            </div>
+
+            <div class="icon-desc">
+                CLASSIFIED FILES
+            </div>
+
         </div>
+
+
+        <!-- 4 -->
 
         <div class="icon" onclick="openModal('time')">
+
             <div class="icon-symbol">⏳</div>
-            <div class="icon-name">TIME</div>
-            <div class="icon-desc">TIMELINE</div>
+
+            <div class="icon-name">
+                TIME
+            </div>
+
+            <div class="icon-desc">
+                TIMELINE
+            </div>
+
         </div>
+
+
+        <!-- 5 -->
 
         <div class="icon" onclick="openModal('secret')">
+
             <div class="icon-symbol">🚪</div>
-            <div class="icon-name">SECRET</div>
-            <div class="icon-desc">RESTRICTED</div>
+
+            <div class="icon-name">
+                SECRET
+            </div>
+
+            <div class="icon-desc">
+                RESTRICTED
+            </div>
+
         </div>
 
+
+        <!-- 6 -->
+
         <div class="icon" onclick="openModal('download')">
+
             <div class="icon-symbol">☣️</div>
-            <div class="icon-name">DOWNLOAD</div>
-            <div class="icon-desc">TRANSFER NODE</div>
+
+            <div class="icon-name">
+                DOWNLOAD
+            </div>
+
+            <div class="icon-desc">
+                TRANSFER NODE
+            </div>
+
         </div>
 
     </div>
@@ -838,316 +952,258 @@ body:after{
 
 <div class="modal" id="modal">
 
-<button class="close" onclick="closeModal()">×</button>
+    <button class="close" onclick="closeModal()">×</button>
 
-<div class="modal-inner">
+    <div class="modal-inner">
 
 
-<!-- IDENTITY -->
+    <!-- IDENTITY -->
 
-<div id="identity" class="modal-content">
+    <div id="identity" class="modal-content">
 
-    <div class="modal-title">DIGITAL IDENTITY</div>
-
-    <div class="modal-sub">
-        USER PROFILE GENERATED
-    </div>
-
-    <div class="identity-card">
-
-        <div class="data-row">
-            <span>NAME</span>
-            <span class="data-value" id="idName"></span>
+        <div class="modal-title">
+            DIGITAL IDENTITY
         </div>
 
-        <div class="data-row">
-            <span>USER ID</span>
-            <span class="data-value" id="userID"></span>
+        <div class="modal-sub">
+            USER PROFILE GENERATED
         </div>
 
-        <div class="data-row">
-            <span>ACCESS LEVEL</span>
-            <span class="data-value">UNKNOWN</span>
-        </div>
+        <div class="identity-card">
 
-        <div class="data-row">
-            <span>STATUS</span>
-            <span class="data-value">ACTIVE</span>
-        </div>
-
-        <div class="data-row">
-            <span>SESSION</span>
-            <span class="data-value" id="sessionID"></span>
-        </div>
-
-        <div class="data-row">
-            <span>ENTRY TIME</span>
-            <span class="data-value" id="entryTime"></span>
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- SIGNAL -->
-
-<div id="signal" class="modal-content">
-
-    <div class="modal-title">SIGNAL</div>
-
-    <div class="modal-sub">
-        UNKNOWN SOURCE DETECTED
-    </div>
-
-    <div class="signal-circle">
-        <div class="signal-core"></div>
-    </div>
-
-    <div class="signal-data">
-
-        FREQUENCY:
-        <span id="frequency"></span>
-        <br>
-
-        SOURCE: UNKNOWN
-        <br>
-
-        STATUS: LISTENING...
-        <br>
-
-        SIGNAL:
-        <span id="signalStrength"></span>
-
-    </div>
-
-</div>
-
-
-<!-- VAULT -->
-
-<div id="vault" class="modal-content">
-
-    <div class="modal-title">DIGITAL VAULT</div>
-
-    <div class="modal-sub">
-        CLASSIFIED ARCHIVE
-    </div>
-
-    <div class="vault">
-
-        <div class="file" onclick="openFile(this)">
-            [ FILE_001 ] — ORIGIN
-
-            <div class="file-content">
-                Classification: UNKNOWN<br>
-                Origin data has been partially erased.<br>
-                Remaining records: 17%
+            <div class="data-row">
+                <span>NAME</span>
+                <span class="data-value" id="idName"></span>
             </div>
-        </div>
 
-        <div class="file" onclick="openFile(this)">
-            [ FILE_002 ] — SIGNAL
-
-            <div class="file-content">
-                A signal was detected before this session began.<br>
-                Source could not be identified.
+            <div class="data-row">
+                <span>USER ID</span>
+                <span class="data-value" id="userID"></span>
             </div>
-        </div>
 
-        <div class="file" onclick="openFile(this)">
-            [ FILE_003 ] — USER
-
-            <div class="file-content">
-                Identity created successfully.<br>
-                Observation status: ACTIVE.
+            <div class="data-row">
+                <span>ACCESS LEVEL</span>
+                <span class="data-value">UNKNOWN</span>
             </div>
-        </div>
 
-        <div class="file" onclick="openFile(this)">
-            [ FILE_004 ] — FUTURE
-
-            <div class="file-content">
-                ACCESS RESTRICTED.<br>
-                This file has not been created yet.
+            <div class="data-row">
+                <span>STATUS</span>
+                <span class="data-value">ACTIVE</span>
             </div>
+
+            <div class="data-row">
+                <span>SESSION</span>
+                <span class="data-value" id="sessionID"></span>
+            </div>
+
+            <div class="data-row">
+                <span>ENTRY TIME</span>
+                <span class="data-value" id="entryTime"></span>
+            </div>
+
         </div>
 
     </div>
 
-</div>
 
+    <!-- SIGNAL -->
 
-<!-- TIME -->
+    <div id="signal" class="modal-content">
 
-<div id="time" class="modal-content">
+        <div class="modal-title">
+            SIGNAL
+        </div>
 
-    <div class="modal-title">TIME</div>
+        <div class="modal-sub">
+            UNKNOWN SOURCE DETECTED
+        </div>
 
-    <div class="modal-sub">
-        SELECT A POINT IN THE TIMELINE
+        <div class="signal-circle">
+
+            <div class="signal-core"></div>
+
+        </div>
+
+        <div class="signal-data">
+
+            FREQUENCY:
+            <span id="frequency"></span>
+
+            <br>
+
+            SOURCE:
+            UNKNOWN
+
+            <br>
+
+            STATUS:
+            LISTENING...
+
+            <br>
+
+            SIGNAL:
+            <span id="signalStrength"></span>
+
+        </div>
+
     </div>
 
-    <div class="timeline">
 
-        <div class="time-line">
+    <!-- VAULT -->
 
-            <div
-                class="time-point"
-                style="left:5%"
-                onclick="timeEvent('1999')">
+    <div id="vault" class="modal-content">
 
-                <div class="time-label">1999</div>
+        <div class="modal-title">
+            DIGITAL VAULT
+        </div>
+
+        <div class="modal-sub">
+            CLASSIFIED ARCHIVE
+        </div>
+
+        <div class="vault">
+
+            <div class="file" onclick="openFile(this)">
+
+                [ FILE_001 ] — ORIGIN
+
+                <div class="file-content">
+
+                    Classification: UNKNOWN<br>
+                    Origin data has been partially erased.<br>
+                    Remaining records: 17%
+
+                </div>
 
             </div>
 
-            <div
-                class="time-point"
-                style="left:35%"
-                onclick="timeEvent('2015')">
 
-                <div class="time-label">2015</div>
+            <div class="file" onclick="openFile(this)">
 
-            </div>
+                [ FILE_002 ] — SIGNAL
 
-            <div
-                class="time-point"
-                style="left:65%"
-                onclick="timeEvent('2026')">
+                <div class="file-content">
 
-                <div class="time-label">2026</div>
+                    A signal was detected before this
+                    session began.<br>
+
+                    Source could not be identified.
+
+                </div>
 
             </div>
 
-            <div
-                class="time-point"
-                style="left:95%"
-                onclick="timeEvent('2035')">
 
-                <div class="time-label">2035</div>
+            <div class="file" onclick="openFile(this)">
+
+                [ FILE_003 ] — USER
+
+                <div class="file-content">
+
+                    Identity created successfully.<br>
+                    Observation status: ACTIVE.
+
+                </div>
+
+            </div>
+
+
+            <div class="file" onclick="openFile(this)">
+
+                [ FILE_004 ] — FUTURE
+
+                <div class="file-content">
+
+                    ACCESS RESTRICTED.<br>
+                    This file has not been created yet.
+
+                </div>
 
             </div>
 
         </div>
 
-        <div class="time-output" id="timeOutput">
-            SELECT A YEAR
-        </div>
-
     </div>
 
-</div>
 
+    <!-- TIME -->
 
-<!-- SECRET -->
+    <div id="time" class="modal-content">
 
-<div id="secret" class="modal-content">
-
-    <div class="modal-title">SECRET ROOM</div>
-
-    <div class="modal-sub">
-        RESTRICTED ACCESS
-    </div>
-
-    <div class="secret-box">
-
-        <div class="secret-lock" id="secretLock">
-            🔒
+        <div class="modal-title">
+            TIME
         </div>
 
-        <div id="secretText">
-            ACCESS DENIED
+        <div class="modal-sub">
+            SELECT A POINT IN THE TIMELINE
         </div>
 
-        <button
-            class="secret-button"
-            onclick="unlockSecret()">
+        <div class="timeline">
 
-            ATTEMPT ACCESS
+            <div class="time-line">
 
-        </button>
+                <div
+                    class="time-point"
+                    style="left:5%"
+                    onclick="timeEvent('1999')">
 
-        <div
-            class="secret-message"
-            id="secretMessage">
+                    <div class="time-label">
+                        1999
+                    </div>
 
-            YOU WEREN'T SUPPOSED TO FIND THIS.<br><br>
-
-            But you did.<br><br>
-
-            <span style="color:#00ff66">
-                SESSION OBSERVATION: ACTIVE
-            </span>
-
-        </div>
-
-    </div>
-
-</div>
+                </div>
 
 
-<!-- DOWNLOAD -->
+                <div
+                    class="time-point"
+                    style="left:35%"
+                    onclick="timeEvent('2015')">
 
-<div id="download" class="modal-content">
+                    <div class="time-label">
+                        2015
+                    </div>
 
-    <div class="modal-title">
-        DOWNLOAD MANAGER
-    </div>
+                </div>
 
-    <div class="modal-sub">
-        UNKNOWN TRANSFER NODE
-    </div>
 
-    <div class="download-box">
+                <div
+                    class="time-point"
+                    style="left:65%"
+                    onclick="timeEvent('2026')">
 
-        <div class="download-status">
-            ⚠ CONNECTION ESTABLISHED<br>
-            REMOTE TRANSFER INITIALIZED
-        </div>
+                    <div class="time-label">
+                        2026
+                    </div>
 
-        <div id="downloadList"></div>
+                </div>
 
-        <div class="download-log" id="downloadLog">
-            &gt; Waiting for transfer...
-        </div>
 
-        <div class="download-final" id="downloadFinal">
+                <div
+                    class="time-point"
+                    style="left:95%"
+                    onclick="timeEvent('2035')">
 
-            TRANSFER COMPLETE<br>
-            <span id="finalStatus">
-                PROCESSING...
-            </span>
+                    <div class="time-label">
+                        2035
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="time-output" id="timeOutput">
+                SELECT A YEAR
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
+    <!-- SECRET -->
 
-</div>
-</div>
+    <div id="secret" class="modal-content">
 
-
-<script>
-
-/* MATRIX */
-
-const canvas=document.getElementById("matrix");
-const ctx=canvas.getContext("2d");
-
-function resizeCanvas(){
-
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
-
-}
-
-resizeCanvas();
-
-window.addEventListener("resize",resizeCanvas);
-
-const chars="01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%";
-const fontSize=14;
-
-let c
+        <div class="modal-title">
+            SECRET ROOM
+        </d
